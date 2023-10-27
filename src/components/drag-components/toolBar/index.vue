@@ -1,0 +1,177 @@
+<template>
+  <div class="toolbar-wrap">
+    <fileSelect accept=".png,.gif,.jpg,.jpeg" @change="getImgHand"
+      >上传图片</fileSelect
+    >
+    <fileSelect accept=".svg" @change="getSvgHand">上传svg</fileSelect>
+    <el-button type="primary" plain @click="previewHand">预览</el-button>
+    <el-button type="primary" plain @click="previeJson">json</el-button>
+    <!-- <el-button
+      type="primary"
+      :disabled="isMutiSelectList.length <= 1"
+      plain
+      @click="setGroupHand"
+      >组合</el-button
+    > -->
+
+    <div class="label">
+      缩放
+      <el-input-number
+        size="small"
+        :step="0.1"
+        v-model="initScaleRatio"
+      ></el-input-number>
+    </div>
+  </div>
+
+  <el-dialog
+    align-center
+    append-to-body
+    width="1040px"
+    title="预览"
+    destroy-on-close
+    v-model="dialogVisible"
+  >
+    <div class="preview-wrap">
+      <preview :pannel="pannel" v-model="data"></preview>
+    </div>
+  </el-dialog>
+
+  <el-dialog
+    align-center
+    append-to-body
+    width="1200px"
+    title="预览JSON"
+    v-model="jsonDialogVisible"
+  >
+    <div class="preview-wrap-json">
+      <pre>{{ pannel }}</pre>
+    </div>
+  </el-dialog>
+</template>
+
+<script setup lang="ts">
+import fileSelect from "@/components/file-select/index.vue";
+import {  inject, reactive, ref } from "vue";
+import preview from "@/components/custom-component/preview/index.vue";
+import { initScaleRatio } from "@/components/drag-components/Editor/layout";
+import { getUUID } from "@/utils/index";
+let pannel: any = inject("pannel", ref({ components: [] }));
+let data: any = reactive({
+  name1: "哈哈",
+  state:1
+});
+// let isMutiSelectList = computed(() => {
+//   return pannel.components.filter((item: any) => {
+//     return item.active;
+//   });
+// });
+setInterval(() => {
+  data.state = data.state == 1 ? 2 : 1;
+}, 1000);
+const getImgHand = (file: any) => {
+  const fileReader = new FileReader();
+  fileReader.onload = () => {
+    const srcData = fileReader.result;
+    let image: any = new Image();
+    image.src = srcData;
+    image.onload = () => {
+      pannel.components.push({
+        w: image.width,
+        h: image.height,
+        self: {
+          id: getUUID(),
+          name: "Image",
+          url: srcData,
+        },
+      });
+    };
+  };
+  fileReader.readAsDataURL(file);
+};
+const getSvgHand = (file: any) => {
+  let fileReader: any = new FileReader();
+  let fileReaderText: any = new FileReader();
+  fileReader.onload = () => {
+    const srcData = fileReader.result;
+    let image: any = new Image();
+    image.src = srcData;
+    image.onload = () => {
+      let w = image.width;
+      let h = image.height;
+      fileReaderText.onload = () => {
+        pannel.components.push({
+          w,
+          h,
+          self: {
+            id: getUUID(),
+            name: "icon-svg",
+            url: fileReaderText.result,
+          },
+        });
+        fileReaderText.abort();
+        fileReader.abort();
+        fileReader = null;
+        fileReaderText = null;
+      };
+      fileReaderText.readAsText(file);
+    };
+  };
+  fileReader.readAsDataURL(file);
+};
+let dialogVisible = ref(false);
+const previewHand = () => {
+  dialogVisible.value = true;
+};
+
+let jsonDialogVisible = ref(false);
+const previeJson = () => {
+  jsonDialogVisible.value = true;
+};
+
+// 组合
+// const setGroupHand = () => {
+//   let mutiList: Array<any> = isMutiSelectList.value;
+//   mutiList.forEach((item) => {
+//     item.active = false;
+//     item.preventDeactivation = false;
+//   });
+//   pannel.components = pannel.components.filter((item: any) => {
+//     return mutiList.every((list) => item !== list);
+//   });
+//   pannel.components.push({
+//     id: getUUID(),
+//     w: "auto",
+//     h: "auot",
+//     self: {
+//       desc: "组合",
+//       name: "Group",
+//     },
+//     group: mutiList,
+//   });
+// };
+</script>
+
+<style lang="scss" scoped>
+.toolbar-wrap {
+  width: 100%;
+  height: 60px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding: 0 30px;
+}
+
+.preview-wrap {
+  // height: 80vh;
+}
+.preview-wrap-json {
+  // height: 80vh;
+  overflow: auto;
+}
+.label {
+  margin-left: 20px;
+  font-size: 14px;
+}
+</style>

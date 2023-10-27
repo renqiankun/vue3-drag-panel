@@ -1,0 +1,80 @@
+<template>
+  <div
+    class="text-wrap"
+    :contenteditable="canEdit"
+    @blur="handleBlur"
+    @input="handleInput"
+    ref="text"
+    :class="{ 'can-edit': canEdit }"
+    @dblclick="setEdit"
+  >
+    {{ modelValue || defaultModelValue }}
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, nextTick } from "vue";
+
+withDefaults(
+  defineProps<{
+    modelValue: any;
+    defaultModelValue: any;
+    data: any;
+    color?: string;
+    bgColor?: string;
+    padding?: string;
+    radius?: string;
+    fontSize?: string;
+    borderColor?: string;
+    w?: any;
+    h?: any;
+  }>(),
+  {
+    modelValue: "",
+    color:'',
+    bgColor:'',
+    padding:'',
+    radius:'',
+    fontSize:'',
+    borderColor:''
+  }
+);
+let canEdit = ref(false);
+let text = ref();
+const setEdit = async () => {
+  canEdit.value = true;
+  // 全选
+  selectText(text.value);
+  await nextTick();
+  text.value.focus();
+};
+
+const selectText = (element: any) => {
+  const selection: any = window.getSelection();
+  const range = document.createRange();
+  range.selectNodeContents(element);
+  selection.removeAllRanges();
+  selection.addRange(range);
+};
+
+const handleBlur = () => {
+  canEdit.value = false;
+};
+const handleInput = (e: any) => {
+  eimts("update:modelValue", e.target.innerText);
+  eimts("update:defaultModelValue", e.target.innerText);
+};
+const eimts = defineEmits(["update:modelValue", "update:defaultModelValue", "click"]);
+</script>
+
+<style lang="scss" scoped>
+.text-wrap {
+  color: v-bind(color);
+  background-color: v-bind(bgColor);
+  padding: v-bind(padding);
+  border-radius: v-bind(radius);
+  font-size: v-bind(fontSize);
+  border: v-bind(borderColor);
+  word-break: break-all;
+}
+</style>

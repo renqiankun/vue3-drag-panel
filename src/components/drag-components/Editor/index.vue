@@ -3,11 +3,13 @@
     ref="dragRef"
     :class="{ 'drag-editor-wrap': true, disabled: disabled }"
     @click.self.stop="resetAllActiveHand"
-    :style=" {transform: `scale(${initScaleRatio})`,transformOrigin:'0% 0%'}"
+    @mousedown="initKeyEventHand()"
+    v-on-click-outside="closeOutSideEditorHand"
+    :style="styleCom"
   >
     <VueDragResizeRotate
-      v-for="item in components"
-      v-bind="{ ...commonAttr, ...item, url: '' }"
+      v-for="item in pannel.components"
+      v-bind="{ ...commonAttr, ...item, self: '', dySelf: '' }"
       @activated="onActivated(item)"
       @deactivated="onDeactivated(item)"
       @refLineParams="refLineParams"
@@ -19,35 +21,33 @@
       @rotatestop="(rotate:any)=>onRotating(rotate,item)"
       :scaleRatio="initScaleRatio"
     >
-      <Text
-        v-if="item.name == 'Text'"
-        v-model="modelValue[item.prop]"
-        v-model:defaultText="item.defaultText"
-      ></Text>
-      <Picture
-        v-if="item.name == 'Picture'"
-        :url="item.url"
-        :w="item.w"
+      <component
+        :is="getComponentHand(item.self.name)"
+        :data="item"
+        v-model="modelValue[item.self.modelValue]"
+        v-model:defaultModelValue="item.self.defaultModelValue"
         :h="item.h"
-        :flip="item.flip"
-      ></Picture>
+        :w="item.w"
+        v-bind="getItemArrtHand(item)"
+      ></component>
     </VueDragResizeRotate>
     <subLine ref="subLineRef" />
   </div>
 </template>
 
 <script setup lang="ts">
-import Text from "../Text/index.vue";
-import Picture from "../Picture/index.vue";
 import subLine from "@/components/subline/index.vue";
-import { onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, reactive, ref } from "vue";
 import { commonAttr, initScaleRatio } from "./layout.ts";
+import { PannelInterface } from "../editor";
+import { getComponent } from "@/components/custom-component/index";
+import { vOnClickOutside } from "@vueuse/components";
+import { resetComponentAttrHand } from "@/utils";
 const props = withDefaults(
   defineProps<{
-    components: Array<any>;
+    pannel: PannelInterface;
     modelValue?: Record<any, any>;
     disabled?: boolean;
-    parentWidth?: any;
   }>(),
   {
     components: () => [],
@@ -56,6 +56,17 @@ const props = withDefaults(
     parentWidth: 0,
   }
 );
+let styleCom = computed(() => {
+  return {
+    transform: `scale(${initScaleRatio.value})`,
+    transformOrigin: "50% 0%",
+    width: props.pannel.width + "px",
+    height: props.pannel.height + "px",
+    color: props.pannel.color,
+    fontSize: props.pannel.fontSize,
+    backgroundColor: props.pannel.bgColor,
+  };
+});
 let dragRef = ref();
 let dataForm = reactive({
   isAllAsync: false, // 空格按下
@@ -64,31 +75,31 @@ let dataForm = reactive({
   prevOffsetX: 0,
   prevOffsetY: 0,
 });
-watch(
-  () => props.parentWidth,
-  () => {
-    let scale = props.parentWidth / 1000;
-    initScaleRatio.value = scale;
-  },
-  {
-    immediate: true,
-    flush: "post",
-  }
-);
 onMounted(() => {
-  if (!props.disabled) {
-    initKeyEventHand();
-  }
+  // if (!props.disabled) {
+  //   initKeyEventHand();
+  // }
 });
 onUnmounted(() => {
-  window.removeEventListener("keydown", setSyncStateHand);
-  window.removeEventListener("keyup", resetSyncStateHand);
+  removeEventHand();
 });
+const getComponentHand = (name: string) => {
+  return (getComponent(name) as any)?.default ?? "";
+};
 const initKeyEventHand = () => {
   window.addEventListener("keydown", setSyncStateHand);
   window.addEventListener("keyup", resetSyncStateHand);
   window.addEventListener("keydown", setControlHand);
   window.addEventListener("keyup", resetControlHand);
+};
+const removeEventHand = () => {
+  window.removeEventListener("keydown", setSyncStateHand);
+  window.removeEventListener("keyup", resetSyncStateHand);
+  window.removeEventListener("keydown", setControlHand);
+  window.removeEventListener("keyup", resetControlHand);
+};
+const closeOutSideEditorHand = () => {
+  removeEventHand();
 };
 const setSyncStateHand = (ev: any) => {
   if (ev.keyCode === 32) {
@@ -112,10 +123,6 @@ const resetControlHand = (ev: any) => {
     dataForm.controlKey = false;
   }
 };
-// let componentsMap: any = {
-//   Text,
-//   Picture
-// };
 
 let subLineRef = ref();
 const refLineParams = (data: any) => {
@@ -125,19 +132,22 @@ const onActivated = (item: any) => {
   if (dataForm.controlKey) {
     item.preventDeactivation = true;
   } else {
-    props.components.forEach((el) => {
+    props.pannel.components.forEach((el) => {
       el.active = false;
       el.preventDeactivation = false;
     });
   }
+  item.preventDeactivation = true;
   item.active = true;
 };
 const onDeactivated = (item: any) => {
   item.active = false;
+  item.preventDeactivation = false;
 };
 const resetAllActiveHand = () => {
   if (props.disabled) return;
-  props.components.forEach((el) => {
+  initKeyEventHand();
+  props.pannel.components.forEach((el) => {
     el.active = false;
     el.preventDeactivation = false;
   });
@@ -159,7 +169,7 @@ const dragging = (id: any, left: any, top: any) => {
   const deltaY: any = deltaYHand(offsetY);
 
   if (!dataForm.isAllAsync) {
-    props.components.forEach((el) => {
+    props.pannel.components.forEach((el) => {
       if (el.active && el !== id) {
         el.x = (el.x ?? 0) + deltaX;
         el.y = (el.y ?? 0) + deltaY;
@@ -167,7 +177,7 @@ const dragging = (id: any, left: any, top: any) => {
     });
     return;
   }
-  props.components.forEach((el) => {
+  props.pannel.components.forEach((el) => {
     if (el !== id) {
       el.x = (el.x ?? 0) + deltaX;
       el.y = (el.y ?? 0) + deltaY;
@@ -175,7 +185,7 @@ const dragging = (id: any, left: any, top: any) => {
   });
 };
 const dragstop = (id: any, left: any, top: any) => {
-  props.components.forEach((el) => {
+  props.pannel.components.forEach((el) => {
     if (el === id) {
       el.x = left;
       el.y = top;
@@ -198,27 +208,34 @@ const deltaYHand = (offsetY: any) => {
 const onRotating = (rotate: any, item: any) => {
   item.r = rotate;
 };
+
+const getItemArrtHand = (obj: any) => {
+  return resetComponentAttrHand(obj, props.modelValue);
+};
 const emits = defineEmits(["refLineParams"]);
+defineExpose({ ref: dragRef });
 </script>
 
 <style lang="scss" scoped>
 .drag-editor-wrap {
   // width: 100%;
-  width: 1000px;
-  height: 100%;
   position: relative;
   overflow: auto;
-  // margin: 0 auto;
+  margin: 0 auto;
   border: solid 1px rgba(0, 0, 0, 0.1);
   border-top: none;
   box-sizing: border-box;
   background: linear-gradient(-90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px)
       0% 0% / 20px 20px,
     linear-gradient(rgba(0, 0, 0, 0.1) 1px, transparent 1px) 0% 0% / 20px 20px;
-  &.disabled  {
+  ::v-deep(.handle) {
+    background-color: transparent;
+    box-shadow: inset 0 0 3px #fff;
+  }
+  &.disabled {
     background: none;
     border: none;
-    & *{
+    & * {
       pointer-events: none;
     }
   }

@@ -5,51 +5,85 @@
       <leftComponentList />
     </div>
     <div class="mid" ref="midRef">
-      <div :style="{ height: initHeight + 'vh' }">
-        <Editor :parentWidth="1000" :components="components" v-model="data">
+      <el-scrollbar ref="editScrollRef" always>
+        <Editor
+          ref="editorRef"
+          @drop="handleDrop"
+          @dragover="handleDragOver"
+          :pannel="pannel"
+          v-model="data"
+        >
         </Editor>
-      </div>
+      </el-scrollbar>
     </div>
     <div class="right">
-      <rightComponentPanel :active="activeComponent" />
+      <el-scrollbar>
+        <rightComponentPanel
+          :activeLength="activeComponent.length"
+          :active="activeComponent[0]"
+        />
+      </el-scrollbar>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, provide, reactive, ref } from "vue";
-import toolBar from "@/components/toolBar/index.vue";
+import { computed, provide, reactive, ref, watch } from "vue";
+import toolBar from "@/components/drag-components/toolBar/index.vue";
 import Editor from "@/components/drag-components/Editor/index.vue";
-import leftComponentList from "@/components/toolBar/left-component-list.vue";
-import rightComponentPanel from "@/components/toolBar/right-component-panel.vue";
-import { initHeight } from "./components/drag-components/Editor/layout";
-let components = ref([
-  // {
-  //   name: 'Text',
-  //   w:'auto',
-  //   h:'auto',
-  //   prop: 'name1'
-  // }
-]);
-provide("components", components);
-let activeComponent = computed(() => {
-  let active = "";
-  components.value.forEach((item: any) => {
-    if (!active && item.active) {
-      active = item;
-    }
+import leftComponentList from "@/components/drag-components/toolBar/left-pannel/index.vue";
+import rightComponentPanel from "@/components/drag-components/toolBar/right-pannel/index.vue";
+import { getUUID } from "./utils";
+import { ComponentsInterface } from "./components/drag-components/editor";
+let pannel = reactive({
+  version: "0.1",
+  desc: "描述",
+  width: 1000,
+  height: 700,
+  components: <Array<ComponentsInterface>>[],
+});
+let editorRef = ref();
+let editScrollRef = ref();
+provide("pannel", pannel);
+let activeComponent = computed<Array<any>>(() => {
+  return pannel.components?.filter?.((item: any) => {
+    return item.active;
   });
-  return active;
 });
-let data = reactive({
+watch(
+  () => pannel.width,
+  () => {
+    editScrollRef.value?.update?.();
+  },
+  {
+    flush: "post",
+  }
+);
+let data: any = reactive({
   name1: "哈哈",
+  state: 1,
 });
+setInterval(() => {
+  data.state = data.state == 1 ? 2 : 1;
+}, 1000);
+const handleDrop = (e: any) => {
+  e.preventDefault();
+  e.stopPropagation();
 
-let midRef = ref();
-let parentWidth = ref(0);
-onMounted(() => {
-  parentWidth.value = midRef.value.offsetWidth;
-});
+  const componentStr = e.dataTransfer.getData("component");
+  let component: any = JSON.parse(componentStr);
+  const rectInfo = editorRef.value.ref.getBoundingClientRect();
+  if (component) {
+    component.y = e.clientY - rectInfo.y;
+    component.x = e.clientX - rectInfo.x;
+    component.self.id = getUUID();
+    pannel.components.push(component);
+  }
+};
+const handleDragOver = (e: any) => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = "copy";
+};
 </script>
 
 <style lang="scss" scoped>
@@ -57,21 +91,21 @@ onMounted(() => {
   height: calc(100vh - 60px);
   display: flex;
   .left {
-    width: 100px;
-    // box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    min-width: 180px;
     overflow: hidden;
+    box-sizing: border-box;
+    padding: 10px;
   }
   .mid {
     flex: 1;
     overflow: hidden;
-    display: flex;
-    justify-content: center;
-    overflow-y: auto;
+    box-sizing: border-box;
   }
   .right {
-    width: 200px;
+    min-width: 250px;
+    max-width: 250px;
     height: 100%;
-    // box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
     overflow: hidden;
   }
 }

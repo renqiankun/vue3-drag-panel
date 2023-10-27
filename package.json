@@ -9,8 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@element-plus/icons-vue": "^2.1.0",
     "@gausszhou/vue3-drag-resize-rotate": "^3.0.1",
     "@types/node": "^20.8.4",
+    "@vueuse/components": "^10.5.0",
+    "@vueuse/core": "^10.5.0",
     "element-plus": "^2.3.14",
     "vue": "^3.3.4"
   },
