@@ -29,6 +29,7 @@
         :h="item.h"
         :w="item.w"
         v-bind="getItemArrtHand(item)"
+        :style="getStyleHand(item)"
       ></component>
     </VueDragResizeRotate>
     <subLine ref="subLineRef" />
@@ -37,9 +38,9 @@
 
 <script setup lang="ts">
 import subLine from "@/components/subline/index.vue";
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
+import { computed, onMounted, onUnmounted, reactive, ref,  } from "vue";
 import { commonAttr, initScaleRatio } from "./layout.ts";
-import { PannelInterface } from "../editor";
+import { ComponentsInterface, PannelInterface } from "../editor";
 import { getComponent } from "@/components/custom-component/index";
 import { vOnClickOutside } from "@vueuse/components";
 import { resetComponentAttrHand } from "@/utils";
@@ -92,7 +93,11 @@ onMounted(() => {
 onUnmounted(() => {
   removeEventHand();
 });
-
+const getStyleHand = (item: ComponentsInterface) => {
+  return {
+    fontSize: props.pannel.fontSize || item.fontSize,
+  };
+};
 const getComponentHand = (name: string) => {
   return (getComponent(name) as any)?.default ?? "";
 };

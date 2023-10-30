@@ -1,11 +1,10 @@
 <template>
   <div ref="wrapRef" class="drag-editor-preivew-wrap">
     <div :class="{ 'drag-editor-preivew': true }" :style="styleCom">
-      <VueDragResizeRotate
+      <div
         v-for="item in pannel.components"
-        v-bind="{ ...previewAttr, ...item, self: '' }"
-        :scaleRatio="initScaleRatio"
-        :active="false"
+        class="preview-item-wrap"
+        :style="getStyleHand(item)"
       >
         <component
           :is="getComponentHand(item.self.name)"
@@ -17,42 +16,47 @@
           v-bind="getItemArrtHand(item)"
           @click.capture.self="clickHand(item)"
         ></component>
-      </VueDragResizeRotate>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { getComponent } from "@/components/custom-component/index";
+import {
+  ComponentsInterface,
+  PannelInterface,
+} from "@/components/drag-components/editor";
 import { resetComponentAttrHand } from "@/utils";
 import { nextTick, ref, onMounted } from "vue";
 const props = withDefaults(
   defineProps<{
-    pannel: Record<any, any>;
+    pannel: PannelInterface;
     modelValue?: Record<any, any>;
     disabled?: boolean;
     parentWidth?: any;
   }>(),
   {
-    pannel: () => ({}),
+    // pannel: () => ({}),
     modelValue: () => ({}),
     disabled: false,
     parentWidth: 0,
   }
 );
 let wrapRef = ref();
-let previewAttr = {
-  snap: false,
-  debug: false,
-  rotatable: false,
-  draggable: false,
-  resizable: false,
-};
-let initScaleRatio = ref(1);
 let styleCom = ref({});
 onMounted(() => {
   getSytpeMapHand();
 });
+const getStyleHand = (item: ComponentsInterface) => {
+  return {
+    width: item.w || "auto",
+    height: item.h || "auto",
+    fontSize: props.pannel.fontSize || item.fontSize,
+    zIndex: item.z || "auto",
+    transform: `translate(${item.x||0}px, ${item.y||0}px) rotate(${item.r || 0}deg)`,
+  };
+};
 const getSytpeMapHand = async () => {
   await nextTick();
   let styleMap = {
@@ -127,6 +131,7 @@ const getComponentHand = (name: string) => {
 };
 const clickHand = (item: any) => {
   if (!item.self.click) return;
+  console.log('click')
   emits("click", item);
 };
 const getItemArrtHand = (obj: any) => {
@@ -148,5 +153,11 @@ const emits = defineEmits(["click"]);
   ::v-deep(.handle) {
     display: none !important;
   }
+}
+.preview-item-wrap {
+  touch-action: none;
+  position: absolute;
+  box-sizing: border-box;
+  user-select: none;
 }
 </style>
