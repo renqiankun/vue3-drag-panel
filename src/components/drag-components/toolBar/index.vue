@@ -4,6 +4,9 @@
       >上传图片</fileSelect
     >
     <fileSelect accept=".svg" @change="getSvgHand">上传svg</fileSelect>
+    <fileSelect accept=".png,.gif,.jpg,.jpeg" @change="getScaleImgHand"
+      >上传缩放图片</fileSelect
+    >
     <el-button type="primary" plain @click="previewHand">预览</el-button>
     <el-button type="primary" plain @click="previeJson">json</el-button>
     <!-- <el-button
@@ -33,7 +36,7 @@
     v-model="dialogVisible"
   >
     <div class="preview-wrap">
-      <preview :pannel="pannel" v-model="data"></preview>
+      <preview v-if="dialogVisible" :pannel="pannel" v-model="data"></preview>
     </div>
   </el-dialog>
 
@@ -52,14 +55,15 @@
 
 <script setup lang="ts">
 import fileSelect from "@/components/file-select/index.vue";
-import {  inject, reactive, ref } from "vue";
+import { inject, reactive, ref } from "vue";
 import preview from "@/components/custom-component/preview/index.vue";
 import { initScaleRatio } from "@/components/drag-components/Editor/layout";
 import { getUUID } from "@/utils/index";
 let pannel: any = inject("pannel", ref({ components: [] }));
 let data: any = reactive({
   name1: "哈哈",
-  state:1
+  state: 1,
+
 });
 // let isMutiSelectList = computed(() => {
 //   return pannel.components.filter((item: any) => {
@@ -68,6 +72,7 @@ let data: any = reactive({
 // });
 setInterval(() => {
   data.state = data.state == 1 ? 2 : 1;
+  data.rate = data.rate == '40%' ? '100%' : '40%';
 }, 1000);
 const getImgHand = (file: any) => {
   const fileReader = new FileReader();
@@ -82,6 +87,7 @@ const getImgHand = (file: any) => {
         self: {
           id: getUUID(),
           name: "Image",
+          desc:'图片',
           url: srcData,
         },
       });
@@ -106,6 +112,7 @@ const getSvgHand = (file: any) => {
           self: {
             id: getUUID(),
             name: "icon-svg",
+            desc:'缩放图片',
             url: fileReaderText.result,
           },
         });
@@ -128,7 +135,26 @@ let jsonDialogVisible = ref(false);
 const previeJson = () => {
   jsonDialogVisible.value = true;
 };
-
+const getScaleImgHand = (file: any) => {
+  const fileReader = new FileReader();
+  fileReader.onload = () => {
+    const srcData = fileReader.result;
+    let image: any = new Image();
+    image.src = srcData;
+    image.onload = () => {
+      pannel.components.push({
+        w: image.width,
+        h: image.height,
+        self: {
+          id: getUUID(),
+          name: "img-scale",
+          url: srcData,
+        },
+      });
+    };
+  };
+  fileReader.readAsDataURL(file);
+};
 // 组合
 // const setGroupHand = () => {
 //   let mutiList: Array<any> = isMutiSelectList.value;
@@ -165,6 +191,9 @@ const previeJson = () => {
 
 .preview-wrap {
   // height: 80vh;
+  height: 700px;
+  width: 1000px;
+  overflow: hidden;
 }
 .preview-wrap-json {
   // height: 80vh;

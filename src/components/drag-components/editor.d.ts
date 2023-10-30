@@ -46,7 +46,15 @@ export type ComponentsInterface = {
     fontSize?:string
     iconUseSelfColor?:boolean // svg启用自定义颜色
     activeValue?:string // 匹配值 modelValue.prop==activeValue
+    activeMode?:'大于' | '小于'  | '等于' | '不等于' |'大于等于' | '小于等于' | '存在' | '不存在'
     activeMap?:string // {bgColor:red}
+   // 图片缩放开始
+    lockAspectRatio?:boolean, //  图片比例
+    position?:boolean , // 图片比例位置
+    imgWidth?:string
+    imgHeight?:string
+   // 图片缩放结束
+    
     [key: string]: any;
   };
   dySelf:{

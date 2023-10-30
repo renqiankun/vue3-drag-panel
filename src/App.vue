@@ -12,6 +12,7 @@
           @dragover="handleDragOver"
           :pannel="pannel"
           v-model="data"
+          :active="activeComponent"
         >
         </Editor>
       </el-scrollbar>
@@ -65,6 +66,8 @@ let data: any = reactive({
 });
 setInterval(() => {
   data.state = data.state == 1 ? 2 : 1;
+  data.red = data.red == 'red' ? 'green' : 'red';
+  data.rate = data.rate == '40%' ? '100%' : '40%';
 }, 1000);
 const handleDrop = (e: any) => {
   e.preventDefault();
@@ -100,6 +103,7 @@ const handleDragOver = (e: any) => {
     flex: 1;
     overflow: hidden;
     box-sizing: border-box;
+    background-color: #f2f3f5;
   }
   .right {
     min-width: 250px;

@@ -37,25 +37,31 @@
 
 <script setup lang="ts">
 import subLine from "@/components/subline/index.vue";
-import { computed, onMounted, onUnmounted, reactive, ref } from "vue";
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from "vue";
 import { commonAttr, initScaleRatio } from "./layout.ts";
 import { PannelInterface } from "../editor";
 import { getComponent } from "@/components/custom-component/index";
 import { vOnClickOutside } from "@vueuse/components";
 import { resetComponentAttrHand } from "@/utils";
+import { useActiveElement, useMagicKeys, whenever } from "@vueuse/core";
+import { logicAnd } from "@vueuse/math";
+import { useClipboard } from "@vueuse/core";
 const props = withDefaults(
   defineProps<{
     pannel: PannelInterface;
     modelValue?: Record<any, any>;
     disabled?: boolean;
+    active: Array<any>;
   }>(),
   {
     components: () => [],
     modelValue: () => ({}),
     disabled: false,
     parentWidth: 0,
+    active: () => [],
   }
 );
+let editorIsActive = ref(false);
 let styleCom = computed(() => {
   return {
     transform: `scale(${initScaleRatio.value})`,
@@ -67,6 +73,8 @@ let styleCom = computed(() => {
     backgroundColor: props.pannel.bgColor,
   };
 });
+const { text, copy } = useClipboard({ legacy: true });
+
 let dragRef = ref();
 let dataForm = reactive({
   isAllAsync: false, // 空格按下
@@ -79,14 +87,58 @@ onMounted(() => {
   // if (!props.disabled) {
   //   initKeyEventHand();
   // }
+  initCopyEventHand();
 });
 onUnmounted(() => {
   removeEventHand();
 });
+
 const getComponentHand = (name: string) => {
   return (getComponent(name) as any)?.default ?? "";
 };
+// 监听复制
+const initCopyEventHand = () => {
+  const activeElement = useActiveElement();
+  const notUsingInput = computed(() => {
+    return (
+      activeElement.value?.tagName !== "INPUT" &&
+      activeElement.value?.tagName !== "TEXTAREA" &&
+      activeElement.value?.getAttribute("contenteditable") !== "true" &&
+      editorIsActive.value
+    );
+  });
+  const { Ctrl_C, Ctrl_V } = useMagicKeys();
+  whenever(logicAnd(Ctrl_C, notUsingInput), () => {
+    activeJsonToClibordHand();
+  });
+
+  whenever(logicAnd(Ctrl_V, notUsingInput), () => {
+    activeJsonParseHand();
+  });
+};
+// 复制json
+const activeJsonToClibordHand = () => {
+  if(!props.active.length) return
+  try {
+    let activeJson = JSON.stringify(props.active);
+    copy(activeJson);
+  } catch (error) {}
+};
+let activeJsonParseHand = () => {
+  try {
+    props.pannel.components.forEach((item:any)=>{
+      item.active = false
+    })
+    let json = JSON.parse(text.value);
+    json.forEach((item:any)=>{
+      item.active = true
+    })
+    props.pannel.components.push(...json);
+    console.log(props.pannel)
+  } catch (error) {}
+};
 const initKeyEventHand = () => {
+  editorIsActive.value = true;
   window.addEventListener("keydown", setSyncStateHand);
   window.addEventListener("keyup", resetSyncStateHand);
   window.addEventListener("keydown", setControlHand);
@@ -100,6 +152,7 @@ const removeEventHand = () => {
 };
 const closeOutSideEditorHand = () => {
   removeEventHand();
+  editorIsActive.value = false;
 };
 const setSyncStateHand = (ev: any) => {
   if (ev.keyCode === 32) {

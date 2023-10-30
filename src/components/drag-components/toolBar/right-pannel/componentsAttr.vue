@@ -17,7 +17,12 @@
         <el-form-item label="height" title="h">
           <el-input v-model="activeCom.h"></el-input>
         </el-form-item>
-
+        <el-form-item  v-if="isScaleImage" label="图片内部宽度" title="self.imgWidth">
+          <el-input v-model="activeCom.self.imgWidth" placeholder="动态控制%"></el-input>
+        </el-form-item>
+        <el-form-item  v-if="isScaleImage" label="图片内部高度" title="self.imgHeight">
+          <el-input v-model="activeCom.self.imgHeight" placeholder="动态控制%"></el-input>
+        </el-form-item>
         <div v-if="isSvg">
           <el-form-item label="icon自定义颜色" title="self.iconUseSelfColor">
             <el-switch v-model="activeCom.self.iconUseSelfColor"></el-switch>
@@ -68,14 +73,14 @@
             <el-input v-model="activeCom.self.defaultModelValue"></el-input>
           </el-form-item>
         </div>
-        <div v-if="isImage">
+        <div v-if="isImage || isScaleImage">
           <el-form-item label="url" title="self.url">
-            <el-input readonly v-model="activeCom.self.url"></el-input>
+            <el-input  v-model="activeCom.self.url"></el-input>
           </el-form-item>
         </div>
       </el-form>
     </el-collapse-item>
-    <el-collapse-item title="逻辑判断" name="3">
+    <el-collapse-item title="逻辑处理" name="3">
       <el-form size="small" label-position="top">
         <el-form-item label="prop" title="self.prop">
           <el-input
@@ -83,18 +88,53 @@
             v-model="activeCom.self.prop"
           ></el-input>
         </el-form-item>
-        <el-form-item label="值匹配" title="self.activeValue">
+        <el-form-item label="值匹配">
+          <el-select
+            title="self.activeMode"
+            v-model="activeCom.self.activeMode"
+          >
+            <el-option
+              v-for="item in activeModeList"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+          <br />
+          <br />
           <el-input
-            :placeholder="`1 (${activeCom.self.prop || 'prop'}==1)`"
+            title="self.activeValue"
+            :placeholder="`1 (${activeCom.self.prop || 'prop'}${
+              activeCom.self.activeMode || ''
+            }1)`"
             v-model="activeCom.self.activeValue"
           />
         </el-form-item>
         <el-form-item label="匹配后重置属性" title="self.activeMap">
           <el-input
             type="textarea"
-            placeholder='{"bgColor":"red"}'
+            placeholder='{"bgColor":"red || ${red}"}'
             v-model="activeCom.self.activeMap"
           />
+        </el-form-item>
+        <el-form-item
+          v-if="isScaleImage"
+          label="图片比例固定"
+          title="self.lockAspectRatio"
+        >
+          <el-switch v-model="activeCom.self.lockAspectRatio"></el-switch>
+        </el-form-item>
+        <el-form-item
+          v-if="isScaleImage"
+          label="图片比例起始位置"
+          title="self.position"
+        >
+          <el-select v-model="activeCom.self.position">
+            <el-option
+              v-for="item in positionArr"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
         </el-form-item>
       </el-form>
     </el-collapse-item>
@@ -153,12 +193,31 @@ let activeCom = computed(() => {
   }
   return props.active;
 });
+let positionArr = [
+  { label: "靠上", value: "top" },
+  { label: "靠下", value: "bottom" },
+  { label: "靠左", value: "left" },
+  { label: "靠右", value: "right" },
+];
+let activeModeList = [
+  { label: "大于", value: "大于" },
+  { label: "小于", value: "小于" },
+  { label: "等于", value: "等于" },
+  { label: "不等于", value: "不等于" },
+  { label: "大于等于", value: "大于等于" },
+  { label: "小于等于", value: "小于等于" },
+  { label: "存在(!null && !undefind)", value: "存在" },
+  { label: "不存在(null || undefind)", value: "不存在" },
+];
 let isTextArr = ["Text", "Shape"];
 let isText = computed(() => {
   return isTextArr.indexOf(props.active.self.name) > -1;
 });
 let isImage = computed(() => {
   return props.active.self.name == "Image";
+});
+let isScaleImage = computed(() => {
+  return props.active.self.name == "img-scale";
 });
 let isSvg = computed(() => {
   return props.active.self.name == "icon-svg";
