@@ -24,12 +24,12 @@
       <component
         :is="getComponentHand(item.self.name)"
         :data="item"
-        v-model="modelValue[item.self.modelValue]"
-        v-model:defaultModelValue="item.self.defaultModelValue"
         :h="item.h"
         :w="item.w"
         v-bind="getItemArrtHand(item)"
         :style="getStyleHand(item)"
+        v-model="modelValue[item.self.modelValue]"
+        v-model:defaultModelValue="item.self.defaultModelValue"
       ></component>
     </VueDragResizeRotate>
     <subLine ref="subLineRef" />

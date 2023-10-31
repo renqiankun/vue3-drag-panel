@@ -9,13 +9,13 @@
     >
     <el-button type="primary" plain @click="previewHand">预览</el-button>
     <el-button type="primary" plain @click="previeJson">json</el-button>
-    <!-- <el-button
+    <el-button
       type="primary"
       :disabled="isMutiSelectList.length <= 1"
       plain
       @click="setGroupHand"
       >组合</el-button
-    > -->
+    >
 
     <div class="label">
       缩放
@@ -55,24 +55,23 @@
 
 <script setup lang="ts">
 import fileSelect from "@/components/file-select/index.vue";
-import { inject, reactive, ref } from "vue";
+import { computed, inject, reactive, ref,nextTick } from "vue";
 import preview from "@/components/custom-component/preview/index.vue";
 import { initScaleRatio } from "@/components/drag-components/Editor/layout";
-import { getUUID } from "@/utils/index";
+import { getMinComponentArea, getUUID } from "@/utils/index";
 let pannel: any = inject("pannel", ref({ components: [] }));
 let data: any = reactive({
   name1: "哈哈",
   state: 1,
-
 });
-// let isMutiSelectList = computed(() => {
-//   return pannel.components.filter((item: any) => {
-//     return item.active;
-//   });
-// });
+let isMutiSelectList = computed(() => {
+  return pannel.components.filter((item: any) => {
+    return item.active;
+  });
+});
 setInterval(() => {
   data.state = data.state == 1 ? 2 : 1;
-  data.rate = data.rate == '40%' ? '100%' : '40%';
+  data.rate = data.rate == "40%" ? "100%" : "40%";
 }, 1000);
 const getImgHand = (file: any) => {
   const fileReader = new FileReader();
@@ -87,7 +86,7 @@ const getImgHand = (file: any) => {
         self: {
           id: getUUID(),
           name: "Image",
-          desc:'图片',
+          desc: "图片",
           url: srcData,
         },
       });
@@ -112,7 +111,7 @@ const getSvgHand = (file: any) => {
           self: {
             id: getUUID(),
             name: "icon-svg",
-            desc:'缩放图片',
+            desc: "缩放图片",
             url: fileReaderText.result,
           },
         });
@@ -156,26 +155,36 @@ const getScaleImgHand = (file: any) => {
   fileReader.readAsDataURL(file);
 };
 // 组合
-// const setGroupHand = () => {
-//   let mutiList: Array<any> = isMutiSelectList.value;
-//   mutiList.forEach((item) => {
-//     item.active = false;
-//     item.preventDeactivation = false;
-//   });
-//   pannel.components = pannel.components.filter((item: any) => {
-//     return mutiList.every((list) => item !== list);
-//   });
-//   pannel.components.push({
-//     id: getUUID(),
-//     w: "auto",
-//     h: "auot",
-//     self: {
-//       desc: "组合",
-//       name: "Group",
-//     },
-//     group: mutiList,
-//   });
-// };
+const setGroupHand = async () => {
+  let mutiList: Array<any> = JSON.parse(JSON.stringify(isMutiSelectList.value));
+  let { left, right, top, bottom } = getMinComponentArea(mutiList);
+  mutiList = mutiList.map((item) => {
+    return {
+      ...item,
+      active: false,
+      preventDeactivation: false,
+      x: item.x - left,
+      y: item.y - top,
+    };
+  });
+  pannel.components = pannel.components.filter((item: any) => {
+    return isMutiSelectList.value.every((list: any) => item !== list);
+  });
+  let area = {
+    x: left,
+    y: top,
+    w: right - left,
+    h: bottom - top,
+    self: {
+      id: getUUID(),
+      desc: "组合",
+      name: "Group",
+    },
+    group: mutiList,
+  };
+  await nextTick()
+  pannel.components.push(area);
+};
 </script>
 
 <style lang="scss" scoped>

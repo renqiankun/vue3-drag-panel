@@ -17,7 +17,7 @@ export const resetComponentAttrHand = (objMap: any, modelValue: any) => {
   let activeValue = selfObj.activeValue;
   let propName = selfObj.prop;
   let activeMode = selfObj.activeMode;
-  let activeMap = selfObj.activeMap
+  let activeMap = selfObj.activeMap;
   if (!propName || !activeMode || !activeMap) {
     return selfObj;
   }
@@ -71,7 +71,7 @@ const parseMapValuehand = (map: string, modelValue: any) => {
     for (var key in resetMap) {
       let value = resetMap[key];
       if (reg_g.test(value)) {
-        let resetKey = value.replace(/[\$|{|}]/g,'')
+        let resetKey = value.replace(/[\$|{|}]/g, "");
         resetMap[key] = modelValue?.[resetKey] ?? undefined;
       }
     }
@@ -79,4 +79,26 @@ const parseMapValuehand = (map: string, modelValue: any) => {
     console.error("解析 activeMap 失败", error);
   }
   return resetMap;
+};
+
+export const getMinComponentArea = (components) => {
+  let left: any = undefined;
+  let right: any = undefined;
+  let top: any = undefined;
+  let bottom: any = undefined;
+  components.forEach((item: any) => {
+    if (left === undefined || item.x < left) left = item.x;
+
+    if (right === undefined || item.x + item.w > right) right = item.x + item.w;
+
+    if (top === undefined || item.y < top) top = item.y;
+    if (bottom === undefined || item.y + item.h > bottom)
+      bottom = item.y + item.h;
+  });
+  return {
+    left,
+    right,
+    top,
+    bottom,
+  };
 };

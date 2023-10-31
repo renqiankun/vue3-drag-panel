@@ -1,22 +1,22 @@
 <template>
   <div class="group-wrap">
-    <component
-      v-for="item in data.group"
-      :is="getComponentHand(item.self.name)"
-      :data="item"
-      v-bind="item.self"
-      v-model="modelValue[item.self.prop]"
-      v-model:defaultText="item.self.defaultText"
-      :h="item.h"
-      :w="item.w"
-      :style="styleHand(item)"
-    ></component>
+    <div v-for="item in data.group" class="group-item" :style="styleHand(item)">
+      <component
+        :is="getComponentHand(item.self.name)"
+        :data="item"
+        v-bind="item.self"
+        v-model="modelValue[item.self.prop]"
+        v-model:defaultText="item.self.defaultText"
+        :h="item.h"
+        :w="item.w"
+      ></component>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { getComponent } from "@/components/custom-component/index";
- withDefaults(
+withDefaults(
   defineProps<{
     data: any;
     modelValue?: Record<any, any>;
@@ -28,11 +28,22 @@ import { getComponent } from "@/components/custom-component/index";
 const getComponentHand = (name: string) => {
   return (getComponent(name) as any).default;
 };
-const styleHand = (item:any) => {
+const styleHand = (item: any) => {
   return {
+    width: item.w == "auto" ? item.w : item.w + "px",
+    height: item.h == "auto" ? item.h : item.h + "px",
     transform: `translate(${item.x}px, ${item.y}px) rotate(${item.r}deg)`,
   };
 };
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.group-wrap {
+  position: absolute;
+  left: 0;
+  top: 0;
+  .group-item {
+    position: absolute;
+  }
+}
+</style>

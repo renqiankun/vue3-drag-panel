@@ -7,8 +7,8 @@
 <script setup lang="ts">
 withDefaults(
   defineProps<{
-    modelValue: any;
-    defaultModelValue: any;
+    modelValue?: any;
+    defaultModelValue?: any;
     data: any;
     color?: string;
     bgColor?: string;

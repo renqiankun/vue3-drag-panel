@@ -9,12 +9,12 @@
         <component
           :is="getComponentHand(item.self.name)"
           :data="item"
-          v-model="modelValue[item.self.modelValue]"
-          v-model:defaultModelValue="item.self.defaultModelValue"
           :h="item.h"
           :w="item.w"
           v-bind="getItemArrtHand(item)"
           @click.capture.self="clickHand(item)"
+          v-model="modelValue[item.self.modelValue]"
+          v-model:defaultModelValue="item.self.defaultModelValue"
         ></component>
       </div>
     </div>
@@ -50,11 +50,13 @@ onMounted(() => {
 });
 const getStyleHand = (item: ComponentsInterface) => {
   return {
-    width: item.w || "auto",
-    height: item.h || "auto",
+    width: item.w === "auto" ? item.w : item.w + "px",
+    height: item.h === "auto" ? item.h : item.h + "px",
     fontSize: props.pannel.fontSize || item.fontSize,
     zIndex: item.z || "auto",
-    transform: `translate(${item.x||0}px, ${item.y||0}px) rotate(${item.r || 0}deg)`,
+    transform: `translate(${item.x || 0}px, ${item.y || 0}px) rotate(${
+      item.r || 0
+    }deg)`,
   };
 };
 const getSytpeMapHand = async () => {
@@ -82,27 +84,7 @@ const getSytpeMapHand = async () => {
     transform: `translate(${translateX}px, ${translateY}px) scale(${endRate})`,
   };
 };
-const getMinLeft = () => {
-  let left: any = undefined;
-  let right: any = undefined;
-  let top: any = undefined;
-  let bottom: any = undefined;
-  props.pannel.components.forEach((item: any) => {
-    if (left === undefined || item.x < left) left = item.x;
 
-    if (right === undefined || item.x + item.w > right) right = item.x + item.w;
-
-    if (top === undefined || item.y < top) top = item.y;
-    if (bottom === undefined || item.y + item.h > bottom)
-      bottom = item.y + item.h;
-  });
-  return {
-    left,
-    right,
-    top,
-    bottom,
-  };
-};
 const getFitTransforOrigin = (width: number, height: number) => {
   // 父级宽高
   // let { left, right, top, bottom } = getMinLeft();
@@ -131,7 +113,7 @@ const getComponentHand = (name: string) => {
 };
 const clickHand = (item: any) => {
   if (!item.self.click) return;
-  console.log('click')
+  console.log("click");
   emits("click", item);
 };
 const getItemArrtHand = (obj: any) => {
