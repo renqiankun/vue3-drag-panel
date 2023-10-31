@@ -1,13 +1,6 @@
 <template>
   <div class="toolbar-wrap">
-    <el-button
-      style="width: 100px;"
-      :loading="isSaving"
-      type="primary"
-      plain
-      @click="setIntervalSaveHand(!interValSave)"
-      >{{ interValSave ? "关闭保存" : "开启保存" }}
-    </el-button>
+
     <uploadImg
       accept=".png,.gif,.jpg,.jpeg"
       type="primary"
@@ -43,6 +36,15 @@
     >
       拆分</el-button
     >
+    <el-button
+      style="width: 100px"
+      :loading="isSaving"
+      type="primary"
+      plain
+      @click="setIntervalSaveHand()"
+      >临时缓存
+    </el-button>
+    <history />
     <div class="label">
       缩放
       <el-input-number
@@ -74,7 +76,7 @@
     v-model="jsonDialogVisible"
   >
     <div class="preview-wrap-json">
-      <pre style="min-height: 200px;" contenteditable>{{ pannel }}</pre>
+      <pre style="min-height: 200px" contenteditable>{{ pannel }}</pre>
     </div>
     <template #footer>
       <el-button type="primary">确认</el-button>
@@ -91,11 +93,13 @@ import { getMinComponentArea, getUUID } from "@/utils/index";
 import { ComponentsInterface } from "../editor";
 import uploadImg from "./upload-img.vue";
 import { setPannel } from "@/utils/storage";
+import history from "./history.vue";
 let pannel: any = inject("pannel", reactive({ components: [] }));
 let data: any = reactive({
   name1: "哈哈",
   state: 1,
 });
+
 setInterval(() => {
   data.state = data.state == 1 ? 2 : 1;
   data.rate = data.rate == "40%" ? "100%" : "40%";
@@ -106,24 +110,14 @@ let isMutiSelectList = computed(() => {
   });
 });
 // 定时保存
-let interValSave: any = ref("");
 let isSaving = ref(false);
-const setIntervalSaveHand = (start: boolean) => {
-  if (!start) {
-    clearInterval(interValSave.value);
-    interValSave.value = "";
-    return;
-  }
+const setIntervalSaveHand = () => {
+  isSaving.value = true;
   setPannel(pannel);
-  interValSave.value = setInterval(() => {
-    isSaving.value = true;
-    setPannel(pannel);
-    setTimeout(() => {
-      isSaving.value = false;
-    }, 500);
-  }, 5 * 1000);
+  setTimeout(() => {
+    isSaving.value = false;
+  }, 500);
 };
-setIntervalSaveHand(true);
 const getCompressImgHand = ({ url }: any) => {
   let image: any = new Image();
   image.src = url;

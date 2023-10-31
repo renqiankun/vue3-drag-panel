@@ -30,6 +30,7 @@ const props = withDefaults(
     noWordWrap?: boolean;
     overEllipsis?: boolean;
     disabled?:boolean
+    hasModelValue?:boolean
   }>(),
   {
     modelValue: "",
@@ -67,7 +68,9 @@ const handleBlur = () => {
   canEdit.value = false;
 };
 const handleInput = (e: any) => {
-  eimts("update:modelValue", e.target.innerText);
+  if(props.hasModelValue){
+    eimts("update:modelValue", e.target.innerText);
+  }
   eimts("update:defaultModelValue", e.target.innerText);
 };
 const eimts = defineEmits([

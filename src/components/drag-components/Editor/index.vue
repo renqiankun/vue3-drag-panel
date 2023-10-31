@@ -10,6 +10,8 @@
     <VueDragResizeRotate
       v-for="item in pannel.components"
       v-bind="{ ...commonAttr, ...item, self: '', dySelf: '' }"
+      :h="item.h == 'auto' ? item.h : parseFloat(item.h) || 0"
+      :w="item.w == 'auto' ? item.w : parseFloat(item.w) || 0"
       @activated="onActivated(item)"
       @deactivated="onDeactivated(item)"
       @refLineParams="refLineParams"
@@ -23,11 +25,13 @@
     >
       <component
         :is="getComponentHand(item.self.name)"
+        :key="item.self.id"
         :data="item"
         :h="item.h"
         :w="item.w"
         v-bind="getItemArrtHand(item)"
         :style="getStyleHand(item)"
+        :hasModelValue="!!item.self.modelValue"
         v-model="modelValue[item.self.modelValue]"
         v-model:defaultModelValue="item.self.defaultModelValue"
         :groupModel="modelValue"
@@ -44,7 +48,7 @@ import { commonAttr, initScaleRatio } from "./layout.ts";
 import { ComponentsInterface, PannelInterface } from "../editor";
 import { getComponent } from "@/components/custom-component/index";
 import { vOnClickOutside } from "@vueuse/components";
-import { resetComponentAttrHand } from "@/utils";
+import { getUUID, resetComponentAttrHand } from "@/utils";
 import { useActiveElement, useMagicKeys, whenever } from "@vueuse/core";
 import { logicAnd } from "@vueuse/math";
 import { useClipboard } from "@vueuse/core";
@@ -138,9 +142,9 @@ let activeJsonParseHand = () => {
     let json = JSON.parse(text.value);
     json.forEach((item: any) => {
       item.active = true;
+      item.self.id = getUUID();
     });
     props.pannel.components.push(...json);
-    console.log(props.pannel);
   } catch (error) {}
 };
 const initKeyEventHand = () => {
@@ -279,7 +283,7 @@ defineExpose({ ref: dragRef });
 .drag-editor-wrap {
   // width: 100%;
   position: relative;
-  overflow: auto;
+  overflow: hidden;
   margin: 0 auto;
   border: solid 1px rgba(0, 0, 0, 0.1);
   border-top: none;

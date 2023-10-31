@@ -42,8 +42,12 @@ let pannel = reactive({
   desc: "描述",
   width: 1000,
   height: 700,
+  bgColor: undefined,
+  color: undefined,
+  fontSize: undefined,
   components: <Array<ComponentsInterface>>[],
 });
+
 try {
   let sessioPanel = getPannel();
   mergeObjHand(pannel, sessioPanel);
