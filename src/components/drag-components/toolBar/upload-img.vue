@@ -40,7 +40,7 @@
       </div>
       <template #footer>
         <el-button @click="closeHand">关闭</el-button>
-        <el-button @click="confirmHand">确认</el-button>
+        <el-button type="primary" @click="confirmHand">确认</el-button>
       </template>
     </el-dialog>
   </el-button>
@@ -103,10 +103,10 @@ const getImgHand = (file: any) => {
     height: dataForm.height || undefined,
     success(file) {
       compressFile.value = file;
-      let fileReader:any = new FileReader();
+      let fileReader: any = new FileReader();
       fileReader.onload = () => {
         dataForm.url = fileReader.result;
-        fileReader = null
+        fileReader = null;
       };
       fileReader.readAsDataURL(file);
     },
@@ -120,6 +120,7 @@ const closeHand = () => {
   dialogVisible.value = false;
 };
 const confirmHand = () => {
+  if (!compressFile.value) return;
   emits("change", { url: dataForm.url, file: compressFile.value });
   closeHand();
 };

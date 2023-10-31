@@ -1,5 +1,13 @@
 <template>
   <div class="toolbar-wrap">
+    <el-button
+      style="width: 100px;"
+      :loading="isSaving"
+      type="primary"
+      plain
+      @click="setIntervalSaveHand(!interValSave)"
+      >{{ interValSave ? "关闭保存" : "开启保存" }}
+    </el-button>
     <uploadImg
       accept=".png,.gif,.jpg,.jpeg"
       type="primary"
@@ -66,8 +74,11 @@
     v-model="jsonDialogVisible"
   >
     <div class="preview-wrap-json">
-      <pre>{{ pannel }}</pre>
+      <pre style="min-height: 200px;" contenteditable>{{ pannel }}</pre>
     </div>
+    <template #footer>
+      <el-button type="primary">确认</el-button>
+    </template>
   </el-dialog>
 </template>
 
@@ -79,20 +90,40 @@ import { initScaleRatio } from "@/components/drag-components/Editor/layout";
 import { getMinComponentArea, getUUID } from "@/utils/index";
 import { ComponentsInterface } from "../editor";
 import uploadImg from "./upload-img.vue";
-let pannel: any = inject("pannel", ref({ components: [] }));
+import { setPannel } from "@/utils/storage";
+let pannel: any = inject("pannel", reactive({ components: [] }));
 let data: any = reactive({
   name1: "哈哈",
   state: 1,
-});
-let isMutiSelectList = computed(() => {
-  return pannel.components.filter((item: any) => {
-    return item.active;
-  });
 });
 setInterval(() => {
   data.state = data.state == 1 ? 2 : 1;
   data.rate = data.rate == "40%" ? "100%" : "40%";
 }, 1000);
+let isMutiSelectList = computed(() => {
+  return pannel.components.filter((item: any) => {
+    return item.active;
+  });
+});
+// 定时保存
+let interValSave: any = ref("");
+let isSaving = ref(false);
+const setIntervalSaveHand = (start: boolean) => {
+  if (!start) {
+    clearInterval(interValSave.value);
+    interValSave.value = "";
+    return;
+  }
+  setPannel(pannel);
+  interValSave.value = setInterval(() => {
+    isSaving.value = true;
+    setPannel(pannel);
+    setTimeout(() => {
+      isSaving.value = false;
+    }, 500);
+  }, 5 * 1000);
+};
+setIntervalSaveHand(true);
 const getCompressImgHand = ({ url }: any) => {
   let image: any = new Image();
   image.src = url;
@@ -267,8 +298,9 @@ const splitGroupHand = (group: any) => {
 .preview-wrap {
   // height: 80vh;
   height: 700px;
-  width: 1000px;
+  width: 100%;
   overflow: hidden;
+  margin: 0 auto;
 }
 .preview-wrap-json {
   // height: 80vh;

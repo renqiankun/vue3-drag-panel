@@ -34,8 +34,9 @@ import toolBar from "@/components/drag-components/toolBar/index.vue";
 import Editor from "@/components/drag-components/Editor/index.vue";
 import leftComponentList from "@/components/drag-components/toolBar/left-pannel/index.vue";
 import rightComponentPanel from "@/components/drag-components/toolBar/right-pannel/index.vue";
-import { getUUID } from "./utils";
+import { getUUID, mergeObjHand } from "./utils";
 import { ComponentsInterface } from "./components/drag-components/editor";
+import { getPannel } from "./utils/storage";
 let pannel = reactive({
   version: "0.1",
   desc: "描述",
@@ -43,6 +44,10 @@ let pannel = reactive({
   height: 700,
   components: <Array<ComponentsInterface>>[],
 });
+try {
+  let sessioPanel = getPannel();
+  mergeObjHand(pannel, sessioPanel);
+} catch (error) {}
 let editorRef = ref();
 let editScrollRef = ref();
 provide("pannel", pannel);
@@ -66,8 +71,8 @@ let data: any = reactive({
 });
 setInterval(() => {
   data.state = data.state == 1 ? 2 : 1;
-  data.red = data.red == 'red' ? 'green' : 'red';
-  data.rate = data.rate == '40%' ? '100%' : '40%';
+  data.red = data.red == "red" ? "green" : "red";
+  data.rate = data.rate == "40%" ? "100%" : "40%";
 }, 1000);
 const handleDrop = (e: any) => {
   e.preventDefault();
@@ -88,7 +93,12 @@ const handleDragOver = (e: any) => {
   e.dataTransfer.dropEffect = "copy";
 };
 </script>
-
+<style>
+.el-dialog__body {
+  max-height: calc(100vh - 180px);
+  overflow: auto;
+}
+</style>
 <style lang="scss" scoped>
 .container {
   height: calc(100vh - 60px);
