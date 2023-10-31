@@ -16,6 +16,7 @@
           v-model="modelValue[item.self.modelValue]"
           v-model:defaultModelValue="item.self.defaultModelValue"
           :groupModel="modelValue"
+          :disabled="true"
         ></component>
       </div>
     </div>

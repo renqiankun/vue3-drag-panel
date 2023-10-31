@@ -1,11 +1,10 @@
 <template>
   <div
-    class="text-wrap"
     :contenteditable="canEdit"
     @blur="handleBlur"
     @input="handleInput"
     ref="text"
-    :class="{ 'can-edit': canEdit }"
+    :class="{ 'text-wrap': true, 'can-edit': canEdit }"
     @dblclick="setEdit"
   >
     {{ modelValue || defaultModelValue }}
@@ -15,7 +14,7 @@
 <script setup lang="ts">
 import { ref, nextTick } from "vue";
 
-withDefaults(
+const props = withDefaults(
   defineProps<{
     modelValue: any;
     defaultModelValue: any;
@@ -28,20 +27,27 @@ withDefaults(
     borderColor?: string;
     w?: any;
     h?: any;
+    noWordWrap?: boolean;
+    overEllipsis?: boolean;
+    disabled?:boolean
   }>(),
   {
     modelValue: "",
-    color:'',
-    bgColor:'',
-    padding:'',
-    radius:'',
-    fontSize:'',
-    borderColor:''
+    color: "",
+    bgColor: "",
+    padding: "",
+    radius: "",
+    fontSize: "",
+    borderColor: "",
+    noWordWrap: false,
+    overEllipsis: false,
+    disabled:false
   }
 );
 let canEdit = ref(false);
 let text = ref();
 const setEdit = async () => {
+  if(props.disabled) return
   canEdit.value = true;
   // 全选
   selectText(text.value);
@@ -64,7 +70,11 @@ const handleInput = (e: any) => {
   eimts("update:modelValue", e.target.innerText);
   eimts("update:defaultModelValue", e.target.innerText);
 };
-const eimts = defineEmits(["update:modelValue", "update:defaultModelValue", "click"]);
+const eimts = defineEmits([
+  "update:modelValue",
+  "update:defaultModelValue",
+  "click",
+]);
 </script>
 
 <style lang="scss" scoped>
@@ -76,5 +86,8 @@ const eimts = defineEmits(["update:modelValue", "update:defaultModelValue", "cli
   font-size: v-bind(fontSize);
   border: v-bind(borderColor);
   word-break: break-all;
+  white-space: v-bind("noWordWrap?'nowrap':''");
+  overflow: v-bind("overEllipsis?'hidden':'auto'");
+  text-overflow: v-bind("overEllipsis?'ellipsis':'unset'");
 }
 </style>

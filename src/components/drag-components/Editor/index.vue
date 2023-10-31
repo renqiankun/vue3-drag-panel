@@ -9,7 +9,6 @@
   >
     <VueDragResizeRotate
       v-for="item in pannel.components"
-      :key="item.self.id"
       v-bind="{ ...commonAttr, ...item, self: '', dySelf: '' }"
       @activated="onActivated(item)"
       @deactivated="onDeactivated(item)"

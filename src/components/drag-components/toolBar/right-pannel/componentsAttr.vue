@@ -72,6 +72,12 @@
           <el-form-item label="默认值" title="self.defaultModelValue">
             <el-input v-model="activeCom.self.defaultModelValue"></el-input>
           </el-form-item>
+          <el-form-item label="禁止换行" title="self.noWordWrap">
+            <el-switch v-model="activeCom.self.noWordWrap"></el-switch>
+          </el-form-item>
+          <el-form-item label="超出省略" title="self.overEllipsis">
+            <el-switch v-model="activeCom.self.overEllipsis"></el-switch>
+          </el-form-item>
         </div>
         <div v-if="isImage || isScaleImage">
           <el-form-item label="url" title="self.url">

@@ -14,6 +14,7 @@
         v-bind="getItemArrtHand(item)"
         v-model="groupModel[item.self.modelValue]"
         v-model:defaultModelValue="item.self.defaultModelValue"
+        :disabled="true"
       ></component>
     </div>
   </div>
@@ -27,6 +28,7 @@ const props = withDefaults(
     data: any;
     modelValue?: Record<any, any>;
     groupModel?: Record<any, any>;
+    disabled?:boolean
   }>(),
   {
     modelValue: () => ({}),
@@ -53,6 +55,8 @@ const getItemArrtHand = (obj: any) => {
   position: absolute;
   left: 0;
   top: 0;
+  width: 100%;
+  height: 100;
   .group-item {
     position: absolute;
   }

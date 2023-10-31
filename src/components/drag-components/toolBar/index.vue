@@ -1,5 +1,12 @@
 <template>
   <div class="toolbar-wrap">
+    <uploadImg
+      accept=".png,.gif,.jpg,.jpeg"
+      type="primary"
+      plain
+      @change="getCompressImgHand"
+      >上传图片并压缩</uploadImg
+    >
     <fileSelect accept=".png,.gif,.jpg,.jpeg" @change="getImgHand"
       >上传图片</fileSelect
     >
@@ -71,6 +78,7 @@ import preview from "@/components/custom-component/preview/index.vue";
 import { initScaleRatio } from "@/components/drag-components/Editor/layout";
 import { getMinComponentArea, getUUID } from "@/utils/index";
 import { ComponentsInterface } from "../editor";
+import uploadImg from "./upload-img.vue";
 let pannel: any = inject("pannel", ref({ components: [] }));
 let data: any = reactive({
   name1: "哈哈",
@@ -85,6 +93,22 @@ setInterval(() => {
   data.state = data.state == 1 ? 2 : 1;
   data.rate = data.rate == "40%" ? "100%" : "40%";
 }, 1000);
+const getCompressImgHand = ({ url }: any) => {
+  let image: any = new Image();
+  image.src = url;
+  image.onload = () => {
+    pannel.components.push({
+      w: image.width,
+      h: image.height,
+      self: {
+        id: getUUID(),
+        name: "Image",
+        desc: "图片",
+        url: url,
+      },
+    });
+  };
+};
 const getImgHand = (file: any) => {
   const fileReader = new FileReader();
   fileReader.onload = () => {
