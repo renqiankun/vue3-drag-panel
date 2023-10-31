@@ -245,6 +245,7 @@ const setGroupHand = async () => {
     y: top,
     w: right - left,
     h: bottom - top,
+    lockAspectRatio:false,
     self: {
       id: getUUID(),
       desc: "组合",

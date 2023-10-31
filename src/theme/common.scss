@@ -1,8 +1,15 @@
-*{
-    margin: 0;
-    padding: 0;
+* {
+  margin: 0;
+  padding: 0;
 }
 
-.vue-drag-resize-rotate{
-    border: none !important;
+.vue-drag-resize-rotate {
+  border: none !important;
+  &.active {
+    box-shadow: inset 1px 1px 10px rgb(199, 199, 199), inset -1px -1px 10px rgb(186, 186, 186);
+  }
+}
+.el-dialog__body {
+  max-height: calc(100vh - 180px);
+  overflow: auto;
 }

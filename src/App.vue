@@ -97,12 +97,7 @@ const handleDragOver = (e: any) => {
   e.dataTransfer.dropEffect = "copy";
 };
 </script>
-<style>
-.el-dialog__body {
-  max-height: calc(100vh - 180px);
-  overflow: auto;
-}
-</style>
+
 <style lang="scss" scoped>
 .container {
   height: calc(100vh - 60px);

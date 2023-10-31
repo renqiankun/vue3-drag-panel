@@ -235,6 +235,7 @@ const onDeactivated = (item: any) => {
 const resetAllActiveHand = () => {
   if (props.disabled) return;
   initKeyEventHand();
+  if(dataForm.controlKey && editorIsActive) return
   props.pannel.components.forEach((el) => {
     el.active = false;
     el.preventDeactivation = false;

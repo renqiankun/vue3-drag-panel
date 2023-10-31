@@ -81,12 +81,16 @@ const parseMapValuehand = (map: string, modelValue: any) => {
   return resetMap;
 };
 
-export const getMinComponentArea = (components:any) => {
+export const getMinComponentArea = (components: any) => {
   let left: any = undefined;
   let right: any = undefined;
   let top: any = undefined;
   let bottom: any = undefined;
   components.forEach((item: any) => {
+    item.x = parseFloat(item.x);
+    item.y = parseFloat(item.y);
+    item.h = parseFloat(item.h);
+    item.w = parseFloat(item.w);
     if (left === undefined || item.x < left) left = item.x;
 
     if (right === undefined || item.x + item.w > right) right = item.x + item.w;
@@ -103,11 +107,9 @@ export const getMinComponentArea = (components:any) => {
   };
 };
 
-
-
 /** 对象浅拷贝，保证origin不会引入额外的key */
 export const mergeObjHand = (origin: any, target: any) => {
   for (let key of Object.keys(origin)) {
-    origin[key] = target?.[key] ?? origin[key]
+    origin[key] = target?.[key] ?? origin[key];
   }
-}
+};
