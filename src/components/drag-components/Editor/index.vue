@@ -49,7 +49,12 @@ import { ComponentsInterface, PannelInterface } from "../editor";
 import { getComponent } from "@/components/custom-component/index";
 import { vOnClickOutside } from "@vueuse/components";
 import { getUUID, resetComponentAttrHand } from "@/utils";
-import { useActiveElement, useMagicKeys, whenever } from "@vueuse/core";
+import {
+  useActiveElement,
+  useMagicKeys,
+  whenever,
+  onKeyStroke,
+} from "@vueuse/core";
 import { logicAnd } from "@vueuse/math";
 import { useClipboard } from "@vueuse/core";
 const props = withDefaults(
@@ -124,6 +129,26 @@ const initCopyEventHand = () => {
 
   whenever(logicAnd(Ctrl_V, notUsingInput), () => {
     activeJsonParseHand();
+  });
+  onKeyStroke(["ArrowDown"], (e) => {
+    if (!notUsingInput.value) return;
+    e.preventDefault();
+    keyArrowMoveHand("down");
+  });
+  onKeyStroke(["ArrowLeft"], (e) => {
+    if (!notUsingInput.value) return;
+    e.preventDefault();
+    keyArrowMoveHand("left");
+  });
+  onKeyStroke(["ArrowRight"], (e) => {
+    if (!notUsingInput.value) return;
+    e.preventDefault();
+    keyArrowMoveHand("right");
+  });
+  onKeyStroke(["ArrowUp"], (e) => {
+    if (!notUsingInput.value) return;
+    e.preventDefault();
+    keyArrowMoveHand("up");
   });
 };
 // 复制json
@@ -268,6 +293,34 @@ const deltaYHand = (offsetY: any) => {
   dataForm.prevOffsetY = offsetY;
   return ret;
 };
+
+const keyArrowMoveHand = (position: string) => {
+  let x = 0;
+  let y = 0;
+  switch (position) {
+    case "up":
+      y = -1;
+      break;
+    case "down":
+      y = 1;
+      break;
+    case "left":
+      x = -1;
+      break;
+    case "right":
+      x = 1;
+      break;
+    default:
+      break;
+  }
+  props.pannel.components.forEach((el) => {
+    if (el.active) {
+      el.x = (el.x ?? 0) + x;
+      el.y = (el.y ?? 0) + y;
+    }
+  });
+};
+
 const onRotating = (rotate: any, item: any) => {
   item.r = rotate;
 };

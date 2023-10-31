@@ -76,10 +76,10 @@
     v-model="jsonDialogVisible"
   >
     <div class="preview-wrap-json">
-      <pre style="min-height: 200px" contenteditable>{{ pannel }}</pre>
+      <pre ref="currentPannel" style="min-height: 200px" contenteditable>{{ pannel }}</pre>
     </div>
     <template #footer>
-      <el-button type="primary">确认</el-button>
+      <el-button type="primary" @click="resetPannelHand">确认</el-button>
     </template>
   </el-dialog>
 </template>
@@ -89,11 +89,12 @@ import fileSelect from "@/components/file-select/index.vue";
 import { computed, inject, reactive, ref, nextTick } from "vue";
 import preview from "@/components/custom-component/preview/index.vue";
 import { initScaleRatio } from "@/components/drag-components/Editor/layout";
-import { getMinComponentArea, getUUID } from "@/utils/index";
+import { getMinComponentArea, getUUID, mergeObjHand } from "@/utils/index";
 import { ComponentsInterface } from "../editor";
 import uploadImg from "./upload-img.vue";
 import { setPannel } from "@/utils/storage";
 import history from "./history.vue";
+import { ElMessage } from "element-plus";
 let pannel: any = inject("pannel", reactive({ components: [] }));
 let data: any = reactive({
   name1: "哈哈",
@@ -277,6 +278,19 @@ const splitGroupHand = (group: any) => {
     };
   });
 };
+
+
+let currentPannel = ref()
+const resetPannelHand = ()=>{
+  let value = currentPannel.value.innerText
+  try {
+    let newPannel = JSON.parse(value)
+    mergeObjHand(pannel,newPannel)
+    jsonDialogVisible.value = false
+  } catch (error) {
+    ElMessage.error('解析数据失败')
+  }
+}
 </script>
 
 <style lang="scss" scoped>
