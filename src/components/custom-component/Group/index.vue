@@ -1,14 +1,19 @@
 <template>
   <div class="group-wrap">
-    <div v-for="item in data.group" class="group-item" :style="styleHand(item)">
+    <div
+      v-for="item in data.group"
+      :a="item.active"
+      class="group-item"
+      :style="styleHand(item)"
+    >
       <component
         :is="getComponentHand(item.self.name)"
         :data="item"
-        v-bind="item.self"
-        v-model="modelValue[item.self.prop]"
-        v-model:defaultText="item.self.defaultText"
         :h="item.h"
         :w="item.w"
+        v-bind="getItemArrtHand(item)"
+        v-model="groupModel[item.self.modelValue]"
+        v-model:defaultModelValue="item.self.defaultModelValue"
       ></component>
     </div>
   </div>
@@ -16,13 +21,16 @@
 
 <script setup lang="ts">
 import { getComponent } from "@/components/custom-component/index";
-withDefaults(
+import { resetComponentAttrHand } from "@/utils";
+const props = withDefaults(
   defineProps<{
     data: any;
     modelValue?: Record<any, any>;
+    groupModel?: Record<any, any>;
   }>(),
   {
     modelValue: () => ({}),
+    groupModel: () => ({}),
   }
 );
 const getComponentHand = (name: string) => {
@@ -32,8 +40,11 @@ const styleHand = (item: any) => {
   return {
     width: item.w == "auto" ? item.w : item.w + "px",
     height: item.h == "auto" ? item.h : item.h + "px",
-    transform: `translate(${item.x}px, ${item.y}px) rotate(${item.r}deg)`,
+    transform: `translate(${item.x}px, ${item.y}px) rotate(${item.r || 0}deg)`,
   };
+};
+const getItemArrtHand = (obj: any) => {
+  return resetComponentAttrHand(obj, props.groupModel);
 };
 </script>
 

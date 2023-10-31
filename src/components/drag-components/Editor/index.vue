@@ -9,6 +9,7 @@
   >
     <VueDragResizeRotate
       v-for="item in pannel.components"
+      :key="item.self.id"
       v-bind="{ ...commonAttr, ...item, self: '', dySelf: '' }"
       @activated="onActivated(item)"
       @deactivated="onDeactivated(item)"
@@ -30,6 +31,7 @@
         :style="getStyleHand(item)"
         v-model="modelValue[item.self.modelValue]"
         v-model:defaultModelValue="item.self.defaultModelValue"
+        :groupModel="modelValue"
       ></component>
     </VueDragResizeRotate>
     <subLine ref="subLineRef" />
@@ -38,7 +40,7 @@
 
 <script setup lang="ts">
 import subLine from "@/components/subline/index.vue";
-import { computed, onMounted, onUnmounted, reactive, ref,  } from "vue";
+import { computed, onMounted, onUnmounted, reactive, ref } from "vue";
 import { commonAttr, initScaleRatio } from "./layout.ts";
 import { ComponentsInterface, PannelInterface } from "../editor";
 import { getComponent } from "@/components/custom-component/index";
@@ -123,7 +125,7 @@ const initCopyEventHand = () => {
 };
 // 复制json
 const activeJsonToClibordHand = () => {
-  if(!props.active.length) return
+  if (!props.active.length) return;
   try {
     let activeJson = JSON.stringify(props.active);
     copy(activeJson);
@@ -131,15 +133,15 @@ const activeJsonToClibordHand = () => {
 };
 let activeJsonParseHand = () => {
   try {
-    props.pannel.components.forEach((item:any)=>{
-      item.active = false
-    })
+    props.pannel.components.forEach((item: any) => {
+      item.active = false;
+    });
     let json = JSON.parse(text.value);
-    json.forEach((item:any)=>{
-      item.active = true
-    })
+    json.forEach((item: any) => {
+      item.active = true;
+    });
     props.pannel.components.push(...json);
-    console.log(props.pannel)
+    console.log(props.pannel);
   } catch (error) {}
 };
 const initKeyEventHand = () => {

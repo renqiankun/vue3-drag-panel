@@ -14,9 +14,20 @@
       :disabled="isMutiSelectList.length <= 1"
       plain
       @click="setGroupHand"
-      >组合</el-button
     >
-
+      组合</el-button
+    >
+    <el-button
+      type="primary"
+      :disabled="
+        isMutiSelectList.length != 1 ||
+        isMutiSelectList?.[0]?.self?.name != 'Group'
+      "
+      plain
+      @click="splitComponentHand()"
+    >
+      拆分</el-button
+    >
     <div class="label">
       缩放
       <el-input-number
@@ -55,10 +66,11 @@
 
 <script setup lang="ts">
 import fileSelect from "@/components/file-select/index.vue";
-import { computed, inject, reactive, ref,nextTick } from "vue";
+import { computed, inject, reactive, ref, nextTick } from "vue";
 import preview from "@/components/custom-component/preview/index.vue";
 import { initScaleRatio } from "@/components/drag-components/Editor/layout";
 import { getMinComponentArea, getUUID } from "@/utils/index";
+import { ComponentsInterface } from "../editor";
 let pannel: any = inject("pannel", ref({ components: [] }));
 let data: any = reactive({
   name1: "哈哈",
@@ -156,9 +168,17 @@ const getScaleImgHand = (file: any) => {
 };
 // 组合
 const setGroupHand = async () => {
-  let mutiList: Array<any> = JSON.parse(JSON.stringify(isMutiSelectList.value));
-  let { left, right, top, bottom } = getMinComponentArea(mutiList);
-  mutiList = mutiList.map((item) => {
+  let mutiList: Array<any> = isMutiSelectList.value || [];
+  let allListContentGroup: Array<ComponentsInterface> = [];
+  mutiList.forEach((item) => {
+    if (item.self.name == "Group") {
+      allListContentGroup.push(...splitGroupHand(item));
+    } else {
+      allListContentGroup.push(item);
+    }
+  });
+  let { left, right, top, bottom } = getMinComponentArea(allListContentGroup);
+  let newMutiList = allListContentGroup.map((item) => {
     return {
       ...item,
       active: false,
@@ -167,7 +187,7 @@ const setGroupHand = async () => {
       y: item.y - top,
     };
   });
-  pannel.components = pannel.components.filter((item: any) => {
+  let components = pannel.components.filter((item: any) => {
     return isMutiSelectList.value.every((list: any) => item !== list);
   });
   let area = {
@@ -180,10 +200,33 @@ const setGroupHand = async () => {
       desc: "组合",
       name: "Group",
     },
-    group: mutiList,
+    group: newMutiList,
   };
-  await nextTick()
-  pannel.components.push(area);
+  components.push(area);
+  await nextTick();
+  pannel.components = components;
+};
+// 拆分
+const splitComponentHand = () => {
+  let group = isMutiSelectList.value?.[0] ?? {};
+  let childs = splitGroupHand(group);
+  let removeGroupComponents = pannel.components.filter((item: any) => {
+    return group !== item;
+  });
+  removeGroupComponents.push(...childs);
+  pannel.components = removeGroupComponents;
+};
+const splitGroupHand = (group: any) => {
+  let components = group?.group ?? [];
+  let groupX = group.x;
+  let groupY = group.y;
+  return components.map((item: any) => {
+    return {
+      ...item,
+      x: groupX + item.x,
+      y: groupY + item.y,
+    };
+  });
 };
 </script>
 
@@ -197,7 +240,6 @@ const setGroupHand = async () => {
   box-sizing: border-box;
   padding: 0 30px;
 }
-
 .preview-wrap {
   // height: 80vh;
   height: 700px;

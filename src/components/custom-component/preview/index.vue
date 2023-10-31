@@ -15,6 +15,7 @@
           @click.capture.self="clickHand(item)"
           v-model="modelValue[item.self.modelValue]"
           v-model:defaultModelValue="item.self.defaultModelValue"
+          :groupModel="modelValue"
         ></component>
       </div>
     </div>

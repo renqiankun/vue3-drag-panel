@@ -14,6 +14,7 @@
             <el-icon><Close /></el-icon>
           </div>
           {{ item.self.desc || item.self.name }}
+          {{ item.self.name == "Group" ? item.group.length : "" }}
         </div>
       </div>
     </el-scrollbar>

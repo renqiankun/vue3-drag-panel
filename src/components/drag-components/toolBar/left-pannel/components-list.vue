@@ -7,7 +7,7 @@
       :draggable="true"
       :data-index="index"
     >
-      <span>{{ item.self.desc }}</span>
+      <span>{{ item.self.desc }} </span>
     </div>
   </div>
 </template>
@@ -16,7 +16,7 @@
 import { components } from "@/components/custom-component/index";
 
 const handleDragStart = (e: any) => {
-  let content = JSON.stringify(components[e.target.dataset.index])
+  let content = JSON.stringify(components[e.target.dataset.index]);
   e.dataTransfer.setData("component", content);
 };
 </script>

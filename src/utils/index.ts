@@ -81,7 +81,7 @@ const parseMapValuehand = (map: string, modelValue: any) => {
   return resetMap;
 };
 
-export const getMinComponentArea = (components) => {
+export const getMinComponentArea = (components:any) => {
   let left: any = undefined;
   let right: any = undefined;
   let top: any = undefined;
