@@ -11,6 +11,7 @@
           ref="editorRef"
           @drop="handleDrop"
           @dragover="handleDragOver"
+          @refresh="refreshEditorHand()"
           :pannel="pannel"
           v-model="data"
           :active="activeComponent"

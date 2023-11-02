@@ -122,7 +122,7 @@ const initCopyEventHand = () => {
       editorIsActive.value
     );
   });
-  const { Ctrl_C, Ctrl_V } = useMagicKeys();
+  const { Ctrl_C, Ctrl_V, Delete } = useMagicKeys();
   whenever(logicAnd(Ctrl_C, notUsingInput), () => {
     activeJsonToClibordHand();
   });
@@ -130,6 +130,11 @@ const initCopyEventHand = () => {
   whenever(logicAnd(Ctrl_V, notUsingInput), () => {
     activeJsonParseHand();
   });
+
+  whenever(logicAnd(Delete, notUsingInput), () => {
+    deleteActiveHand();
+  });
+
   onKeyStroke(["ArrowDown"], (e) => {
     if (!notUsingInput.value) return;
     e.preventDefault();
@@ -171,6 +176,13 @@ let activeJsonParseHand = () => {
     });
     props.pannel.components.push(...json);
   } catch (error) {}
+};
+// 删除激活的组件
+const deleteActiveHand = () => {
+  props.pannel.components = props.pannel.components.filter((item: any) => {
+    return !item.active;
+  });
+  emits("refresh");
 };
 const initKeyEventHand = () => {
   editorIsActive.value = true;
@@ -235,7 +247,7 @@ const onDeactivated = (item: any) => {
 const resetAllActiveHand = () => {
   if (props.disabled) return;
   initKeyEventHand();
-  if(dataForm.controlKey && editorIsActive) return
+  if (dataForm.controlKey && editorIsActive) return;
   props.pannel.components.forEach((el) => {
     el.active = false;
     el.preventDeactivation = false;
@@ -329,7 +341,7 @@ const onRotating = (rotate: any, item: any) => {
 const getItemArrtHand = (obj: any) => {
   return resetComponentAttrHand(obj, props.modelValue);
 };
-const emits = defineEmits(["refLineParams"]);
+const emits = defineEmits(["refLineParams", "refresh"]);
 defineExpose({ ref: dragRef });
 </script>
 
