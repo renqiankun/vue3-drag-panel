@@ -35,6 +35,7 @@ export type ComponentsInterface = {
     url?: string; // 图片
     modelValue?: any; // 文本
     defaultModelValue?: string; // 文本
+    hide?:boolean; //隐藏
     noWordWrap?:boolean  // 文本 禁止换行
     overEllipsis?:boolean // 超出省略
     click?: boolean; // 启用点击抛出事件

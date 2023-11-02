@@ -17,6 +17,9 @@
         <el-form-item label="height" title="h">
           <el-input v-model="activeCom.h"></el-input>
         </el-form-item>
+        <el-form-item label="隐藏" title="self.hide">
+          <el-switch v-model="activeCom.self.hide"></el-switch>
+        </el-form-item>
         <el-form-item  v-if="isScaleImage" label="图片内部宽度" title="self.imgWidth">
           <el-input v-model="activeCom.self.imgWidth" placeholder="动态控制%"></el-input>
         </el-form-item>

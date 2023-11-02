@@ -24,6 +24,7 @@
       :scaleRatio="initScaleRatio"
     >
       <component
+        v-show="!item.self.hide"
         :is="getComponentHand(item.self.name)"
         :key="item.self.id"
         :data="item"

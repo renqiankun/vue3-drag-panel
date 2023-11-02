@@ -2,7 +2,10 @@
   <toolBar @refresh="refreshEditorHand" />
   <div class="container">
     <div class="left">
-      <leftComponentList :active="activeComponent[0]" @delete="refreshEditorHand()" />
+      <leftComponentList
+        :active="activeComponent[0]"
+        @delete="refreshEditorHand()"
+      />
     </div>
     <div class="mid" ref="midRef">
       <el-scrollbar ref="editScrollRef" always>
@@ -39,6 +42,7 @@ import rightComponentPanel from "@/components/drag-components/toolBar/right-pann
 import { getUUID, mergeObjHand } from "./utils";
 import { ComponentsInterface } from "./components/drag-components/editor";
 import { getPannel } from "./utils/storage";
+import initJson from "@/utils/initJson";
 let pannel = reactive({
   version: "0.1",
   desc: "描述",
@@ -50,7 +54,8 @@ let pannel = reactive({
   components: <Array<ComponentsInterface>>[],
 });
 try {
-  let sessioPanel = getPannel();
+  let sessioPanel: any = getPannel();
+  sessioPanel = sessioPanel.version ? sessioPanel : initJson;
   mergeObjHand(pannel, sessioPanel);
 } catch (error) {}
 let editorRef = ref();
@@ -77,7 +82,7 @@ let data: any = reactive({
 setInterval(() => {
   data.state = data.state == 1 ? 2 : 1;
   data.red = data.red == "red" ? "green" : "red";
-  data.rate = data.rate == "40%" ? "100%" : "40%";
+  data.rate = data.rate == 40 ? 80 : 40;
 }, 1000);
 const handleDrop = (e: any) => {
   e.preventDefault();

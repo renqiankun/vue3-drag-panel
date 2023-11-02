@@ -103,7 +103,7 @@ let data: any = reactive({
 
 setInterval(() => {
   data.state = data.state == 1 ? 2 : 1;
-  data.rate = data.rate == "40%" ? "100%" : "40%";
+  data.rate = data.rate == 40 ? 80  : 40;
 }, 1000);
 let isMutiSelectList = computed(() => {
   return pannel.components.filter((item: any) => {

@@ -65,14 +65,18 @@ export const resetComponentAttrHand = (objMap: any, modelValue: any) => {
 
 const parseMapValuehand = (map: string, modelValue: any) => {
   let resetMap: any = {};
-  let reg_g = /\$\{(.*?)\}/g; //(.*?)\}表示匹配任意字符到离它最近的'}'
+  let reg_g = /\$\{(.*?)\}.*/g; //(.*?)\}表示匹配任意字符到离它最近的'}'
   try {
     resetMap = JSON.parse(map);
     for (var key in resetMap) {
-      let value = resetMap[key];
+      let value = resetMap[key]; // bb${a}px
       if (reg_g.test(value)) {
-        let resetKey = value.replace(/[\$|{|}]/g, "");
-        resetMap[key] = modelValue?.[resetKey] ?? undefined;
+        let reg_key = /\$\{(.*?)\}/g;  // ${a}
+        let match = value.match(reg_key)?.[0] ?? ""; // ${a}
+        let allStringArr = value.split(match); // ['bb','px']
+        let resetKey = match.replace(/[\$|{|}]/g, ""); // a
+        let dataValue = modelValue?.[resetKey] ?? "";
+        resetMap[key] = allStringArr.join?.(dataValue);
       }
     }
   } catch (error) {
