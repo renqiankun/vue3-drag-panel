@@ -1,8 +1,8 @@
 <template>
-  <toolBar @refresh="refreshEditorHand"/>
+  <toolBar @refresh="refreshEditorHand" />
   <div class="container">
     <div class="left">
-      <leftComponentList />
+      <leftComponentList @delete="refreshEditorHand()" />
     </div>
     <div class="mid" ref="midRef">
       <el-scrollbar ref="editScrollRef" always>
@@ -97,10 +97,10 @@ const handleDragOver = (e: any) => {
   e.dataTransfer.dropEffect = "copy";
 };
 
-let editorIndex= ref(1)
-const refreshEditorHand = ()=>{
-  editorIndex.value +=1
-}
+let editorIndex = ref(1);
+const refreshEditorHand = () => {
+  editorIndex.value += 1;
+};
 </script>
 
 <style lang="scss" scoped>

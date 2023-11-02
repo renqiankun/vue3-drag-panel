@@ -33,7 +33,9 @@ const delHand = (delItem: any) => {
   pannel.components = pannel.components.filter((item: any) => {
     return item !== delItem;
   });
+  emits('delete')
 };
+const emits = defineEmits(['delete'])
 </script>
 
 <style lang="scss" scoped>

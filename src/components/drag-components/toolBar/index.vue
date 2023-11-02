@@ -1,5 +1,6 @@
 <template>
   <div class="toolbar-wrap">
+    <el-button type="primary" plain @click="emits('refresh')">刷新</el-button>
 
     <uploadImg
       accept=".png,.gif,.jpg,.jpeg"
