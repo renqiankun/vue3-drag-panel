@@ -1,11 +1,19 @@
 {
-  "name": "drag-self",
-  "private": true,
-  "version": "0.0.0",
+  "name": "drag-pannel-preview",
+  "private": false,
+  "version": "0.0.6",
   "type": "module",
+  "main": "./lib/drag-pannel-preview.umd.cjs",
+  "exports": {
+    ".": {
+      "import": "./lib/drag-pannel-preview.js",
+      "require": "./lib/drag-pannel-preview.umd.cjs"
+    }
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "build:lib": "vite build --mode=lib",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -16,6 +24,7 @@
     "@vueuse/core": "^10.5.0",
     "@vueuse/math": "^10.5.0",
     "compressorjs": "^1.2.1",
+    "drag-pannel-preview": "^0.0.4",
     "element-plus": "^2.3.14",
     "lodash-es": "^4.17.21",
     "vue": "^3.3.4"
@@ -25,6 +34,8 @@
     "sass": "^1.69.1",
     "typescript": "^5.0.2",
     "vite": "^4.4.5",
+    "vite-plugin-css-injected-by-js": "^3.3.0",
+    "vite-plugin-vue-setup-extend": "^0.4.0",
     "vue-tsc": "^1.8.5"
   }
 }

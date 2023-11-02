@@ -13,7 +13,7 @@
 </template>
 
 <script setup lang="ts">
-import { components } from "@/components/custom-component/index";
+import { components } from "@/components/drag-components/index";
 
 const handleDragStart = (e: any) => {
   let content = JSON.stringify(components[e.target.dataset.index]);

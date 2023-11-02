@@ -1,0 +1,8 @@
+.*
+dist
+src
+index.html
+tsconfig.json
+tsconfig.node.json
+vite.config.ts
+node_modules

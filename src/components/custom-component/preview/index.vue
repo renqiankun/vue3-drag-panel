@@ -23,7 +23,7 @@
   </div>
 </template>
 
-<script setup lang="ts">
+<script setup lang="ts" name="dragPannelPreview">
 import { getComponent } from "@/components/custom-component/index";
 import {
   ComponentsInterface,

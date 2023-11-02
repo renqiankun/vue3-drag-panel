@@ -87,7 +87,8 @@
 <script setup lang="ts">
 import fileSelect from "@/components/file-select/index.vue";
 import { computed, inject, reactive, ref, nextTick } from "vue";
-import preview from "@/components/custom-component/preview/index.vue";
+// import preview from "@/components/custom-component/preview/index.vue";
+import preview from 'drag-pannel-preview'
 import { initScaleRatio } from "@/components/drag-components/Editor/layout";
 import { getMinComponentArea, getUUID, mergeObjHand } from "@/utils/index";
 import { ComponentsInterface } from "../editor";
