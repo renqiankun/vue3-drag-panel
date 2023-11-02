@@ -1,5 +1,5 @@
 <template>
-  <toolBar />
+  <toolBar @refresh="refreshEditorHand"/>
   <div class="container">
     <div class="left">
       <leftComponentList />
@@ -7,6 +7,7 @@
     <div class="mid" ref="midRef">
       <el-scrollbar ref="editScrollRef" always>
         <Editor
+          :key="editorIndex"
           ref="editorRef"
           @drop="handleDrop"
           @dragover="handleDragOver"
@@ -47,7 +48,6 @@ let pannel = reactive({
   fontSize: undefined,
   components: <Array<ComponentsInterface>>[],
 });
-
 try {
   let sessioPanel = getPannel();
   mergeObjHand(pannel, sessioPanel);
@@ -96,6 +96,11 @@ const handleDragOver = (e: any) => {
   e.preventDefault();
   e.dataTransfer.dropEffect = "copy";
 };
+
+let editorIndex= ref(1)
+const refreshEditorHand = ()=>{
+  editorIndex.value +=1
+}
 </script>
 
 <style lang="scss" scoped>

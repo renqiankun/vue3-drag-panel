@@ -13,7 +13,7 @@
       </el-dropdown-menu>
     </template>
   </el-dropdown>
-  <el-button @click="taggleAutoHand()" plain type="primary">{{
+  <el-button @click="taggleAutoHand()" plain :type="unWatch?'primary':'danger'">{{
     unWatch ? "自动保存中" : "已暂停保存"
   }}</el-button>
 </template>

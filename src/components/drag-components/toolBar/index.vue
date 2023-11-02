@@ -86,7 +86,7 @@
 
 <script setup lang="ts">
 import fileSelect from "@/components/file-select/index.vue";
-import { computed, inject, reactive, ref, nextTick } from "vue";
+import { computed, inject, reactive, ref } from "vue";
 // import preview from "@/components/custom-component/preview/index.vue";
 import preview from 'drag-pannel-preview'
 import { initScaleRatio } from "@/components/drag-components/Editor/layout";
@@ -255,8 +255,8 @@ const setGroupHand = async () => {
     group: newMutiList,
   };
   components.push(area);
-  await nextTick();
   pannel.components = components;
+  emits('refresh')
 };
 // 拆分
 const splitComponentHand = () => {
@@ -267,6 +267,7 @@ const splitComponentHand = () => {
   });
   removeGroupComponents.push(...childs);
   pannel.components = removeGroupComponents;
+  emits('refresh')
 };
 const splitGroupHand = (group: any) => {
   let components = group?.group ?? [];
@@ -293,6 +294,8 @@ const resetPannelHand = ()=>{
     ElMessage.error('解析数据失败')
   }
 }
+
+const emits = defineEmits(['refresh'])
 </script>
 
 <style lang="scss" scoped>
