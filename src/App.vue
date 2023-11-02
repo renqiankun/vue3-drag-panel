@@ -2,7 +2,7 @@
   <toolBar @refresh="refreshEditorHand" />
   <div class="container">
     <div class="left">
-      <leftComponentList @delete="refreshEditorHand()" />
+      <leftComponentList :active="activeComponent[0]" @delete="refreshEditorHand()" />
     </div>
     <div class="mid" ref="midRef">
       <el-scrollbar ref="editScrollRef" always>

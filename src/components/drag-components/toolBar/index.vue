@@ -1,21 +1,19 @@
 <template>
   <div class="toolbar-wrap">
-    <el-button type="primary" plain @click="emits('refresh')">刷新</el-button>
-
     <uploadImg
       accept=".png,.gif,.jpg,.jpeg"
       type="primary"
       plain
       @change="getCompressImgHand"
-      >上传图片并压缩</uploadImg
+      >选择图片并压缩</uploadImg
     >
-    <fileSelect accept=".png,.gif,.jpg,.jpeg" @change="getImgHand"
+    <!-- <fileSelect accept=".png,.gif,.jpg,.jpeg" @change="getImgHand"
       >上传图片</fileSelect
-    >
-    <fileSelect accept=".svg" @change="getSvgHand">上传svg</fileSelect>
+    > -->
     <fileSelect accept=".png,.gif,.jpg,.jpeg" @change="getScaleImgHand"
-      >上传缩放图片</fileSelect
+      >选择图片</fileSelect
     >
+    <fileSelect accept=".svg" @change="getSvgHand">选择svg</fileSelect>
     <el-button type="primary" plain @click="previewHand">预览</el-button>
     <el-button type="primary" plain @click="previeJson">json</el-button>
     <el-button
@@ -130,34 +128,34 @@ const getCompressImgHand = ({ url }: any) => {
       h: image.height,
       self: {
         id: getUUID(),
-        name: "Image",
+        name: "img-scale",
         desc: "图片",
         url: url,
       },
     });
   };
 };
-const getImgHand = (file: any) => {
-  const fileReader = new FileReader();
-  fileReader.onload = () => {
-    const srcData = fileReader.result;
-    let image: any = new Image();
-    image.src = srcData;
-    image.onload = () => {
-      pannel.components.push({
-        w: image.width,
-        h: image.height,
-        self: {
-          id: getUUID(),
-          name: "Image",
-          desc: "图片",
-          url: srcData,
-        },
-      });
-    };
-  };
-  fileReader.readAsDataURL(file);
-};
+// const getImgHand = (file: any) => {
+//   const fileReader = new FileReader();
+//   fileReader.onload = () => {
+//     const srcData = fileReader.result;
+//     let image: any = new Image();
+//     image.src = srcData;
+//     image.onload = () => {
+//       pannel.components.push({
+//         w: image.width,
+//         h: image.height,
+//         self: {
+//           id: getUUID(),
+//           name: "Image",
+//           desc: "图片",
+//           url: srcData,
+//         },
+//       });
+//     };
+//   };
+//   fileReader.readAsDataURL(file);
+// };
 const getSvgHand = (file: any) => {
   let fileReader: any = new FileReader();
   let fileReaderText: any = new FileReader();
@@ -175,7 +173,7 @@ const getSvgHand = (file: any) => {
           self: {
             id: getUUID(),
             name: "icon-svg",
-            desc: "缩放图片",
+            desc: "svg",
             url: fileReaderText.result,
           },
         });
@@ -211,6 +209,7 @@ const getScaleImgHand = (file: any) => {
         self: {
           id: getUUID(),
           name: "img-scale",
+          desc:'图片',
           url: srcData,
         },
       });

@@ -3,29 +3,38 @@
     <div class="com-wrap">
       <componentsList />
     </div>
-    <el-scrollbar height="50%" always>
-      <div class="real-com-wrap">
-        <div
-          :class="{ 'com-item': true, active: item.active }"
-          v-for="item in pannel.components"
-          @click="setActiveHand(item)"
-        >
-          <div class="close-wrap" @click.stop="delHand(item)">
-            <el-icon><Close /></el-icon>
+    <div class="real-scroll-wrap">
+      <el-scrollbar height="100%" always>
+        <div ref="nodeWrap" class="real-com-wrap">
+          <div
+            :class="{ 'com-item': true, active: item.active }"
+            v-for="item in pannel.components"
+            @click="setActiveHand(item)"
+          >
+            <div class="close-wrap" @click.stop="delHand(item)">
+              <el-icon><Close /></el-icon>
+            </div>
+            {{ item.self.desc || item.self.name }}
+            {{ item.self.name == "Group" ? item.group.length : "" }}
           </div>
-          {{ item.self.desc || item.self.name }}
-          {{ item.self.name == "Group" ? item.group.length : "" }}
         </div>
-      </div>
-    </el-scrollbar>
+      </el-scrollbar>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { inject, ref } from "vue";
+import { inject, ref, watch } from "vue";
 import componentsList from "./components-list.vue";
 import { Close } from "@element-plus/icons-vue";
+const props = withDefaults(
+  defineProps<{
+    active: any;
+  }>(),
+  {}
+);
 let pannel: any = inject("pannel", ref({}));
+
 const setActiveHand = (item: any) => {
   item.active = true;
 };
@@ -33,9 +42,27 @@ const delHand = (delItem: any) => {
   pannel.components = pannel.components.filter((item: any) => {
     return item !== delItem;
   });
-  emits('delete')
+  emits("delete");
 };
-const emits = defineEmits(['delete'])
+
+watch(
+  () => props.active,
+  () => {
+    scrollActiveHand();
+  },
+  {
+    flush: "post",
+  }
+);
+
+let nodeWrap: any = ref();
+const scrollActiveHand = () => {
+  if (!props.active) return;
+  let node = nodeWrap.value.querySelector(".active");
+  node?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+};
+
+const emits = defineEmits(["delete"]);
 </script>
 
 <style lang="scss" scoped>
@@ -47,12 +74,16 @@ const emits = defineEmits(['delete'])
   font-size: 14px;
   color: #333;
   overflow: hidden;
+  display: flex;
+  flex-direction: column;
   .com-wrap {
-    height: 50%;
+    flex: 1;
     border-bottom: solid 1px #eaeaea;
   }
 }
-
+.real-scroll-wrap {
+  height: 300px;
+}
 .real-com-wrap {
   box-sizing: border-box;
   padding: 0 15px 0 0;
@@ -67,7 +98,7 @@ const emits = defineEmits(['delete'])
     cursor: pointer;
     position: relative;
     &.active {
-      background-color: #f2f3f5;
+      background-color: #e4f0fe;
     }
   }
   .close-wrap {

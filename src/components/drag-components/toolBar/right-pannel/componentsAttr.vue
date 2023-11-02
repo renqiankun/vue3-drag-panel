@@ -79,7 +79,7 @@
             <el-switch v-model="activeCom.self.overEllipsis"></el-switch>
           </el-form-item>
         </div>
-        <div v-if="isImage || isScaleImage">
+        <div v-if="isImage || isScaleImage || isSvg">
           <el-form-item label="url" title="self.url">
             <el-input  v-model="activeCom.self.url"></el-input>
           </el-form-item>

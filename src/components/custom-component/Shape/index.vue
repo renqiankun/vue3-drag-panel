@@ -1,5 +1,5 @@
 <template>
-  <div class="text-wrap">
+  <div class="shap-wrap">
     {{ modelValue || defaultModelValue }}
   </div>
 </template>
@@ -33,7 +33,9 @@ withDefaults(
 </script>
 
 <style lang="scss" scoped>
-.text-wrap {
+.shap-wrap {
+  word-break: break-all;
+  box-sizing: border-box;
   height: 100%;
   color: v-bind(color);
   background-color: v-bind(bgColor);
@@ -41,6 +43,6 @@ withDefaults(
   border-radius: v-bind(radius);
   font-size: v-bind(fontSize);
   border: v-bind(borderColor);
-  word-break: break-all;
+
 }
 </style>

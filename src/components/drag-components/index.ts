@@ -18,12 +18,23 @@ export const components = [
       h: 200,
       self: {
         id: getUUID(),
-        name: "Image",
+        name: "img-scale",
         desc: "图片",
         url: imgGif,
       },
       dySelf:{}
     },
+    // {
+    //   w: 200,
+    //   h: 200,
+    //   self: {
+    //     id: getUUID(),
+    //     name: "Image",
+    //     desc: "图片",
+    //     url: imgGif,
+    //   },
+    //   dySelf:{}
+    // },
     {
       w: 100,
       h: 100,
@@ -49,16 +60,6 @@ export const components = [
       },
       dySelf:{}
     },
-    {
-      w: 200,
-      h: 200,
-      self: {
-        id: getUUID(),
-        name: "img-scale",
-        desc: "缩放图片",
-        url: imgGif,
-      },
-      dySelf:{}
-    },
+   
   ];
   

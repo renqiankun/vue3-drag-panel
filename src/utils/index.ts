@@ -87,17 +87,19 @@ export const getMinComponentArea = (components: any) => {
   let top: any = undefined;
   let bottom: any = undefined;
   components.forEach((item: any) => {
-    item.x = parseFloat(item.x);
-    item.y = parseFloat(item.y);
-    item.h = parseFloat(item.h);
-    item.w = parseFloat(item.w);
-    if (left === undefined || item.x < left) left = item.x;
+    let halfFont = (parseFloat(item.fontSize) || 16) / 2;
+    let halfFontW = 32;
 
-    if (right === undefined || item.x + item.w > right) right = item.x + item.w;
+    let itemX = parseFloat(item.x);
+    let itemY = parseFloat(item.y);
+    let itemH = item.h === "auto" ? halfFont : parseFloat(item.h) || halfFont;
+    let itemW = item.w === "auto" ? halfFontW : parseFloat(item.w) || halfFontW;
+    if (left === undefined || itemX < left) left = itemX;
 
-    if (top === undefined || item.y < top) top = item.y;
-    if (bottom === undefined || item.y + item.h > bottom)
-      bottom = item.y + item.h;
+    if (right === undefined || itemX + itemW > right) right = itemX + itemW;
+
+    if (top === undefined || itemY < top) top = itemY;
+    if (bottom === undefined || itemY + itemH > bottom) bottom = itemY + itemH;
   });
   return {
     left,
