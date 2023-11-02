@@ -43,7 +43,7 @@
 </template>
 
 <script setup lang="ts">
-import subLine from "@/components/subline/index.vue";
+import subLine from "../subline/index.vue";
 import { computed, onMounted, onUnmounted, reactive, ref } from "vue";
 import { commonAttr, initScaleRatio } from "./layout.ts";
 import { ComponentsInterface, PannelInterface } from "../editor";

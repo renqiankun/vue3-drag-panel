@@ -143,5 +143,8 @@ const emits = defineEmits(["click"]);
   position: absolute;
   box-sizing: border-box;
   user-select: none;
+  img {
+    -webkit-user-drag: none;
+  }
 }
 </style>
