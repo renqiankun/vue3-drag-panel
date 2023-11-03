@@ -7,6 +7,7 @@
         :style="getStyleHand(item)"
       >
         <component
+          class="dycomponent-class"
           :is="getComponentHand(item.self.name)"
           :data="item"
           :h="item.h"
@@ -147,4 +148,9 @@ const emits = defineEmits(["click"]);
     -webkit-user-drag: none;
   }
 }
+.dycomponent-class {
+    &[hide] {
+      display: none;
+    }
+  }
 </style>

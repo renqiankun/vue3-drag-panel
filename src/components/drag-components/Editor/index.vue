@@ -24,7 +24,7 @@
       :scaleRatio="initScaleRatio"
     >
       <component
-        v-show="!item.self.hide"
+        class="dycomponent-class"
         :is="getComponentHand(item.self.name)"
         :data="item"
         :h="item.h"
@@ -368,4 +368,9 @@ defineExpose({ ref: dragRef });
     }
   }
 }
+.dycomponent-class {
+    &[hide] {
+      display: none;
+    }
+  }
 </style>
