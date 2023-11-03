@@ -49,7 +49,7 @@
 <script setup lang="ts">
 import { useDropZone } from "@vueuse/core";
 import { reactive, ref, nextTick, shallowRef } from "vue";
-import fileSelect from "@/components/file-select/index.vue";
+import fileSelect from "../file-select/index.vue";
 import Compressor from "compressorjs";
 import { ElMessage } from "element-plus";
 const props = withDefaults(

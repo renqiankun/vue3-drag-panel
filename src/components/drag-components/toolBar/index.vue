@@ -5,8 +5,9 @@
       type="primary"
       plain
       @change="getCompressImgHand"
-      >选择图片并压缩</uploadImg
     >
+      选择图片并压缩
+    </uploadImg>
     <!-- <fileSelect accept=".png,.gif,.jpg,.jpeg" @change="getImgHand"
       >上传图片</fileSelect
     > -->
@@ -18,30 +19,28 @@
     <el-button type="primary" plain @click="previeJson">json</el-button>
     <el-button
       type="primary"
-      :disabled="isMutiSelectList.length <= 1"
+      :disabled="active.length <= 1"
       plain
       @click="setGroupHand"
     >
-      组合</el-button
-    >
+      组合
+    </el-button>
     <el-button
       type="primary"
-      :disabled="
-        isMutiSelectList.length != 1 ||
-        isMutiSelectList?.[0]?.self?.name != 'Group'
-      "
+      :disabled="active.length != 1 || active?.[0]?.self?.name != 'Group'"
       plain
       @click="splitComponentHand()"
     >
-      拆分</el-button
-    >
+      拆分
+    </el-button>
     <el-button
       style="width: 100px"
       :loading="isSaving"
       type="primary"
       plain
       @click="setIntervalSaveHand()"
-      >临时缓存
+    >
+      临时缓存
     </el-button>
     <history />
     <div class="label">
@@ -63,7 +62,11 @@
     v-model="dialogVisible"
   >
     <div class="preview-wrap">
-      <preview v-if="dialogVisible" :pannel="pannel" v-model="data"></preview>
+      <preview
+        v-if="dialogVisible"
+        :pannel="pannel"
+        v-model="modelValueCom"
+      ></preview>
     </div>
   </el-dialog>
 
@@ -75,7 +78,9 @@
     v-model="jsonDialogVisible"
   >
     <div class="preview-wrap-json">
-      <pre ref="currentPannel" style="min-height: 200px" contenteditable>{{ pannel }}</pre>
+      <pre ref="currentPannel" style="min-height: 200px" contenteditable>{{
+        pannel
+      }}</pre>
     </div>
     <template #footer>
       <el-button type="primary" @click="resetPannelHand">确认</el-button>
@@ -84,10 +89,10 @@
 </template>
 
 <script setup lang="ts">
-import fileSelect from "@/components/file-select/index.vue";
+import fileSelect from "../file-select/index.vue";
 import { computed, inject, reactive, ref } from "vue";
 // import preview from "@/components/custom-component/preview/index.vue";
-import preview from 'drag-pannel-preview'
+import preview from "drag-pannel-preview";
 import { initScaleRatio } from "@/components/drag-components/Editor/layout";
 import { getMinComponentArea, getUUID, mergeObjHand } from "@/utils/index";
 import { ComponentsInterface } from "../editor";
@@ -95,21 +100,31 @@ import uploadImg from "./upload-img.vue";
 import { setPannel } from "@/utils/storage";
 import history from "./history.vue";
 import { ElMessage } from "element-plus";
+const props = withDefaults(
+  defineProps<{
+    modelValue: any;
+    active: any;
+  }>(),
+  {
+    modelValue: () => ({}),
+    active: () => [],
+  }
+);
+let modelValueCom = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(newVal) {
+    emits("update:modelValue", newVal);
+  },
+});
 let pannel: any = inject("pannel", reactive({ components: [] }));
-let data: any = reactive({
-  name1: "哈哈",
-  state: 1,
-});
 
-setInterval(() => {
-  data.state = data.state == 1 ? 2 : 1;
-  data.rate = data.rate == 40 ? 80  : 40;
-}, 1000);
-let isMutiSelectList = computed(() => {
-  return pannel.components.filter((item: any) => {
-    return item.active;
-  });
-});
+// let isMutiSelectList = computed(() => {
+//   return pannel.components.filter((item: any) => {
+//     return item.active;
+//   });
+// });
 // 定时保存
 let isSaving = ref(false);
 const setIntervalSaveHand = () => {
@@ -209,7 +224,7 @@ const getScaleImgHand = (file: any) => {
         self: {
           id: getUUID(),
           name: "img-scale",
-          desc:'图片',
+          desc: "图片",
           url: srcData,
         },
       });
@@ -219,7 +234,7 @@ const getScaleImgHand = (file: any) => {
 };
 // 组合
 const setGroupHand = async () => {
-  let mutiList: Array<any> = isMutiSelectList.value || [];
+  let mutiList: Array<any> = props.active || [];
   let allListContentGroup: Array<ComponentsInterface> = [];
   mutiList.forEach((item) => {
     if (item.self.name == "Group") {
@@ -229,7 +244,7 @@ const setGroupHand = async () => {
     }
   });
   let { left, right, top, bottom } = getMinComponentArea(allListContentGroup);
-  let newMutiList = allListContentGroup.map((item) => {
+  let newMutiList = allListContentGroup.map((item: any) => {
     return {
       ...item,
       active: false,
@@ -239,14 +254,14 @@ const setGroupHand = async () => {
     };
   });
   let components = pannel.components.filter((item: any) => {
-    return isMutiSelectList.value.every((list: any) => item !== list);
+    return props.active.every((list: any) => item !== list);
   });
   let area = {
     x: left,
     y: top,
     w: right - left,
     h: bottom - top,
-    lockAspectRatio:false,
+    lockAspectRatio: false,
     self: {
       id: getUUID(),
       desc: "组合",
@@ -256,18 +271,18 @@ const setGroupHand = async () => {
   };
   components.push(area);
   pannel.components = components;
-  emits('refresh')
+  emits("refresh");
 };
 // 拆分
 const splitComponentHand = () => {
-  let group = isMutiSelectList.value?.[0] ?? {};
+  let group = props.active?.[0] ?? {};
   let childs = splitGroupHand(group);
   let removeGroupComponents = pannel.components.filter((item: any) => {
     return group !== item;
   });
   removeGroupComponents.push(...childs);
   pannel.components = removeGroupComponents;
-  emits('refresh')
+  emits("refresh");
 };
 const splitGroupHand = (group: any) => {
   let components = group?.group ?? [];
@@ -282,20 +297,19 @@ const splitGroupHand = (group: any) => {
   });
 };
 
-
-let currentPannel = ref()
-const resetPannelHand = ()=>{
-  let value = currentPannel.value.innerText
+let currentPannel = ref();
+const resetPannelHand = () => {
+  let value = currentPannel.value.innerText;
   try {
-    let newPannel = JSON.parse(value)
-    mergeObjHand(pannel,newPannel)
-    jsonDialogVisible.value = false
+    let newPannel = JSON.parse(value);
+    mergeObjHand(pannel, newPannel);
+    jsonDialogVisible.value = false;
   } catch (error) {
-    ElMessage.error('解析数据失败')
+    ElMessage.error("解析数据失败");
   }
-}
+};
 
-const emits = defineEmits(['refresh'])
+const emits = defineEmits(["refresh", "update:modelValue"]);
 </script>
 
 <style lang="scss" scoped>

@@ -26,7 +26,6 @@
       <component
         v-show="!item.self.hide"
         :is="getComponentHand(item.self.name)"
-        :key="item.self.id"
         :data="item"
         :h="item.h"
         :w="item.w"
@@ -167,7 +166,7 @@ const activeJsonToClibordHand = () => {
 };
 let activeJsonParseHand = () => {
   try {
-    props.pannel.components.forEach((item: any) => {
+    props.active?.forEach?.((item: any) => {
       item.active = false;
     });
     let json = JSON.parse(text.value);
@@ -233,7 +232,7 @@ const onActivated = (item: any) => {
   if (dataForm.controlKey) {
     item.preventDeactivation = true;
   } else {
-    props.pannel.components.forEach((el) => {
+    props.active?.forEach?.((el) => {
       el.active = false;
       el.preventDeactivation = false;
     });
@@ -249,7 +248,7 @@ const resetAllActiveHand = () => {
   if (props.disabled) return;
   initKeyEventHand();
   if (dataForm.controlKey && editorIsActive) return;
-  props.pannel.components.forEach((el) => {
+  props.active.forEach((el) => {
     el.active = false;
     el.preventDeactivation = false;
   });
@@ -269,9 +268,9 @@ const dragging = (id: any, left: any, top: any) => {
   const offsetY = top - (id.y ?? 0);
   const deltaX: any = deltaXHand(offsetX);
   const deltaY: any = deltaYHand(offsetY);
-
+  // 仅激活的移动
   if (!dataForm.isAllAsync) {
-    props.pannel.components.forEach((el) => {
+    props.active?.forEach?.((el) => {
       if (el.active && el !== id) {
         el.x = (el.x ?? 0) + deltaX;
         el.y = (el.y ?? 0) + deltaY;
@@ -279,6 +278,7 @@ const dragging = (id: any, left: any, top: any) => {
     });
     return;
   }
+  // 全部移动
   props.pannel.components.forEach((el) => {
     if (el !== id) {
       el.x = (el.x ?? 0) + deltaX;
@@ -287,7 +287,7 @@ const dragging = (id: any, left: any, top: any) => {
   });
 };
 const dragstop = (id: any, left: any, top: any) => {
-  props.pannel.components.forEach((el) => {
+  props.active?.forEach?.((el) => {
     if (el === id) {
       el.x = left;
       el.y = top;
@@ -327,11 +327,9 @@ const keyArrowMoveHand = (position: string) => {
     default:
       break;
   }
-  props.pannel.components.forEach((el) => {
-    if (el.active) {
+  props.active?.forEach?.((el) => {
       el.x = (el.x ?? 0) + x;
       el.y = (el.y ?? 0) + y;
-    }
   });
 };
 

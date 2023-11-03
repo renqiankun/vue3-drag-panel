@@ -8,13 +8,13 @@
         <div ref="nodeWrap" class="real-com-wrap">
           <div
             :class="{ 'com-item': true, active: item.active }"
-            v-for="item in pannel.components"
+            v-for="(item,index) in pannel.components"
             @click="setActiveHand(item)"
           >
             <div class="close-wrap" @click.stop="delHand(item)">
               <el-icon><Close /></el-icon>
             </div>
-            {{ item.self.desc || item.self.name }}
+            {{ item.self.desc || item.self.name }}-{{ index }}
             {{ item.self.name == "Group" ? item.group.length : "" }}
           </div>
         </div>
