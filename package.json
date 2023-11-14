@@ -1,7 +1,7 @@
 {
   "name": "drag-pannel-preview",
   "private": false,
-  "version": "0.0.9",
+  "version": "0.1.0",
   "type": "module",
   "main": "./lib/drag-pannel-preview.umd.cjs",
   "exports": {
@@ -24,7 +24,7 @@
     "@vueuse/core": "^10.5.0",
     "@vueuse/math": "^10.5.0",
     "compressorjs": "^1.2.1",
-    "drag-pannel-preview": "^0.0.7",
+    "drag-pannel-preview": "^0.1.0",
     "element-plus": "^2.3.14",
     "lodash-es": "^4.17.21",
     "vue": "^3.3.4"

@@ -8,7 +8,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed } from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -70,6 +70,7 @@ let imgStyleCom = computed(() => {
     position: absolute;
     width: 100%;
     height: 100%;
+    -webkit-user-drag: none;
   }
 }
 </style>
