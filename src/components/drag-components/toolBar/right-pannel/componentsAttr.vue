@@ -75,6 +75,19 @@
           <el-form-item label="默认值" title="self.defaultModelValue">
             <el-input v-model="activeCom.self.defaultModelValue"></el-input>
           </el-form-item>
+          <el-form-item label="位置" title="self.align">
+            <el-select
+            title="self.align"
+            v-model="activeCom.self.align"
+            clearable
+          >
+            <el-option
+              v-for="item in alignList"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+          </el-form-item>
           <el-form-item label="禁止换行" title="self.noWordWrap">
             <el-switch v-model="activeCom.self.noWordWrap"></el-switch>
           </el-form-item>
@@ -218,6 +231,11 @@ let activeModeList = [
   { label: "存在(!null && !undefind)", value: "存在" },
   { label: "不存在(null || undefind)", value: "不存在" },
 ];
+let alignList = [
+{ label: "靠左", value: "left" },
+{ label: "居中", value: "center" },
+{ label: "靠右", value: "right" },
+]
 let isTextArr = ["Text", "Shape"];
 let isText = computed(() => {
   return isTextArr.indexOf(props.active.self.name) > -1;

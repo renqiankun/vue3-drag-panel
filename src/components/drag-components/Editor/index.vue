@@ -22,6 +22,7 @@
       @rotating="(rotate:any)=>onRotating(rotate,item)"
       @rotatestop="(rotate:any)=>onRotating(rotate,item)"
       :scaleRatio="initScaleRatio"
+      :style="getStyleHand(item)"
     >
       <component
         class="dycomponent-class"
@@ -30,7 +31,6 @@
         :h="item.h"
         :w="item.w"
         v-bind="getItemArrtHand(item)"
-        :style="getStyleHand(item)"
         :hasModelValue="!!item.self.modelValue"
         v-model="modelValue[item.self.modelValue]"
         v-model:defaultModelValue="item.self.defaultModelValue"
@@ -328,8 +328,8 @@ const keyArrowMoveHand = (position: string) => {
       break;
   }
   props.active?.forEach?.((el) => {
-      el.x = (el.x ?? 0) + x;
-      el.y = (el.y ?? 0) + y;
+    el.x = (el.x ?? 0) + x;
+    el.y = (el.y ?? 0) + y;
   });
 };
 
@@ -369,8 +369,8 @@ defineExpose({ ref: dragRef });
   }
 }
 .dycomponent-class {
-    &[hide] {
-      display: none;
-    }
+  &[hide] {
+    display: none;
   }
+}
 </style>

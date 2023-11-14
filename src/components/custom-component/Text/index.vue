@@ -25,6 +25,7 @@ const props = withDefaults(
     radius?: string;
     fontSize?: string;
     borderColor?: string;
+    align?:string
     w?: any;
     h?: any;
     noWordWrap?: boolean;
@@ -92,5 +93,6 @@ const eimts = defineEmits([
   white-space: v-bind("noWordWrap?'nowrap':''");
   overflow: v-bind("overEllipsis?'hidden':'auto'");
   text-overflow: v-bind("overEllipsis?'ellipsis':'unset'");
+  text-align:v-bind("align?align:'left'");
 }
 </style>
