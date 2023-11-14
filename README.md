@@ -9,8 +9,9 @@ vue3的拖拽
 预览
 https://renqiankun.github.io/vue3-drag-panel/dist/index.html
 
-![Alt text](image.png)
-![Alt text](image-1.png)
+![image](https://github.com/renqiankun/vue3-drag-panel/assets/27206174/f07071ae-fbc5-499a-abba-332a4bac0192)
+![image](https://github.com/renqiankun/vue3-drag-panel/assets/27206174/7688b3e5-4275-4f73-9638-e19f0452617a)
+
 
 仅预览安装  
     
