@@ -14,7 +14,7 @@ export default defineConfig(({ command, mode }) => {
     },
     outDir: path.join(__dirname, "lib"),
     rollupOptions: {
-      external: ["vue"],
+      external: ["vue","drag-pannel-preview"],
       output: {
         manualChunks: undefined,
         globals: {

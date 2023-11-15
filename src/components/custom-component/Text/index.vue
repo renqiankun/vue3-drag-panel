@@ -94,5 +94,7 @@ const eimts = defineEmits([
   overflow: v-bind("overEllipsis?'hidden':'auto'");
   text-overflow: v-bind("overEllipsis?'ellipsis':'unset'");
   text-align:v-bind("align?align:'left'");
+  width:100%;
+  height:100%;
 }
 </style>
