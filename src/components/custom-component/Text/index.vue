@@ -96,5 +96,6 @@ const eimts = defineEmits([
   text-align:v-bind("align?align:'left'");
   width:100%;
   height:100%;
+  box-sizing: border-box;
 }
 </style>
