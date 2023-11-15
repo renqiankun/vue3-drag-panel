@@ -47,7 +47,7 @@ export const resetComponentAttrHand = (objMap: any, modelValue: any) => {
         equalModelValue = true;
       break;
     case "不存在":
-      if (modelValue[propName] === undefined && modelValue[propName] === null)
+      if (modelValue[propName] === undefined || modelValue[propName] === null)
         equalModelValue = true;
       break;
     default:
