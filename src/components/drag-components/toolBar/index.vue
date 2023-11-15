@@ -66,6 +66,7 @@
         v-if="dialogVisible"
         :pannel="pannel"
         v-model="modelValueCom"
+        @click="componentClickHand"
       ></preview>
     </div>
   </el-dialog>
@@ -91,8 +92,8 @@
 <script setup lang="ts">
 import fileSelect from "../file-select/index.vue";
 import { computed, inject, reactive, ref } from "vue";
-// import preview from "@/components/custom-component/preview/index.vue";
-import preview from "drag-pannel-preview";
+import preview from "@/components/custom-component/preview/index.vue";
+// import preview from "drag-pannel-preview";
 import { initScaleRatio } from "@/components/drag-components/Editor/layout";
 import { getMinComponentArea, getUUID, mergeObjHand } from "@/utils/index";
 import { ComponentsInterface } from "../editor";
@@ -308,7 +309,9 @@ const resetPannelHand = () => {
     ElMessage.error("解析数据失败");
   }
 };
-
+const componentClickHand = (item:any)=>{
+  console.log('accept click', item)
+}
 const emits = defineEmits(["refresh", "update:modelValue"]);
 </script>
 

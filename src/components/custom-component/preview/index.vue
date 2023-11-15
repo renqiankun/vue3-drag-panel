@@ -13,7 +13,7 @@
           :h="item.h"
           :w="item.w"
           v-bind="getItemArrtHand(item)"
-          @click.capture.self="clickHand(item)"
+          @click.capture="clickHand(item)"
           v-model="modelValue[item.self.modelValue]"
           v-model:defaultModelValue="item.self.defaultModelValue"
           :groupModel="modelValue"
