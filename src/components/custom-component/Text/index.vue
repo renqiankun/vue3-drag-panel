@@ -91,7 +91,7 @@ const eimts = defineEmits([
   border: v-bind(borderColor);
   word-break: break-all;
   white-space: v-bind("noWordWrap?'nowrap':''");
-  overflow: v-bind("overEllipsis?'hidden':'auto'");
+  overflow: v-bind("overEllipsis?'hidden':'visible'");
   text-overflow: v-bind("overEllipsis?'ellipsis':'unset'");
   text-align:v-bind("align?align:'left'");
   width:100%;
