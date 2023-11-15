@@ -71,10 +71,16 @@
             v-model="activeCom.self.modelValue"
           ></el-input>
         </el-form-item>
-        <div v-if="isText">
-          <el-form-item label="默认值" title="self.defaultModelValue">
+        <el-form-item label="扩展" title="self.extend">
+          <el-input
+            placeholder="扩展属性"
+            v-model="activeCom.self.extend"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="默认值" title="self.defaultModelValue">
             <el-input v-model="activeCom.self.defaultModelValue"></el-input>
-          </el-form-item>
+        </el-form-item>
+        <div v-if="isText">
           <el-form-item label="位置" title="self.align">
             <el-select
             title="self.align"

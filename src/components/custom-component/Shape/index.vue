@@ -1,6 +1,6 @@
 <template>
   <div class="shap-wrap">
-    {{ modelValue || defaultModelValue }}
+    <!-- {{ modelValue || defaultModelValue }} -->
   </div>
 </template>
 
