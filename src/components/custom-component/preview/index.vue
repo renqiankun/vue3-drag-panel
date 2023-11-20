@@ -13,11 +13,12 @@
           :h="item.h"
           :w="item.w"
           v-bind="getItemArrtHand(item)"
-          @click.capture="clickHand(item)"
+          @click.capture="clickHand($event,item)"
           v-model="modelValue[item.self.modelValue]"
           v-model:defaultModelValue="item.self.defaultModelValue"
           :groupModel="modelValue"
           :disabled="true"
+          :id="item.self?.id||''"
         ></component>
       </div>
     </div>
@@ -114,10 +115,10 @@ const getFitTransforOrigin = (width: number, height: number) => {
 const getComponentHand = (name: string) => {
   return (getComponent(name) as any).default;
 };
-const clickHand = (item: any) => {
+const clickHand = (event:any,item: any) => {
   if (!item.self.click) return;
   console.log("click");
-  emits("click", item);
+  emits("click", {event,item});
 };
 const getItemArrtHand = (obj: any) => {
   return resetComponentAttrHand(obj, props.modelValue);
