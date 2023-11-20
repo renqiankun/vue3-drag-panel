@@ -13,6 +13,7 @@ export default defineConfig(({ command, mode }) => {
       fileName: "drag-pannel-preview",
     },
     outDir: path.join(__dirname, "lib"),
+    drop: command === "build" ? ["console", "debugger"] : [],
     rollupOptions: {
       external: ["vue","drag-pannel-preview"],
       output: {

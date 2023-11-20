@@ -150,6 +150,7 @@ const emits = defineEmits(["click"]);
   }
 }
 .dycomponent-class {
+    pointer-events: none;
     &[hide] {
       display: none;
     }
