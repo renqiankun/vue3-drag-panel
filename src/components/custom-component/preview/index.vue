@@ -5,6 +5,7 @@
         v-for="item in pannel.components"
         class="preview-item-wrap"
         :style="getStyleHand(item)"
+        @click.self="clickHand($event,item)"
       >
         <component
           class="dycomponent-class"
@@ -13,7 +14,6 @@
           :h="item.h"
           :w="item.w"
           v-bind="getItemArrtHand(item)"
-          @click.capture="clickHand($event,item)"
           v-model="modelValue[item.self.modelValue]"
           v-model:defaultModelValue="item.self.defaultModelValue"
           :groupModel="modelValue"
@@ -117,7 +117,7 @@ const getComponentHand = (name: string) => {
 };
 const clickHand = (event:any,item: any) => {
   if (!item.self.click) return;
-  console.log("click");
+  console.log("click",event.target);
   emits("click", {event,item});
 };
 const getItemArrtHand = (obj: any) => {
