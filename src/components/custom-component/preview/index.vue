@@ -3,12 +3,12 @@
     <div :class="{ 'drag-editor-preivew': true }" :style="styleCom">
       <div
         v-for="item in pannel.components"
-        class="preview-item-wrap"
+        :class="{'preview-item-wrap':true,'click-able':item.self.click}"
         :style="getStyleHand(item)"
         @click.self="clickHand($event,item)"
       >
         <component
-          class="dycomponent-class"
+          :class="{'dycomponent-class':true,}"
           :is="getComponentHand(item.self.name)"
           :data="item"
           :h="item.h"
