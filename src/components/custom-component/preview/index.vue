@@ -6,6 +6,7 @@
         :class="{'preview-item-wrap':true,'click-able':item.self.click}"
         :style="getStyleHand(item)"
         @click.self="clickHand($event,item)"
+        @dblclick.self="dbclickHand($event,item)"
       >
         <component
           :class="{'dycomponent-class':true,}"
@@ -117,13 +118,19 @@ const getComponentHand = (name: string) => {
 };
 const clickHand = (event:any,item: any) => {
   if (!item.self.click) return;
-  console.log("click",event.target);
+  // console.log("click",event.target);
   emits("click", {event,item});
 };
+const dbclickHand = (event:any,item: any) => {
+  if (!item.self.click) return;
+  // console.log("dblclick",event.target);
+  emits("dblclick", {event,item});
+};
+
 const getItemArrtHand = (obj: any) => {
   return resetComponentAttrHand(obj, props.modelValue);
 };
-const emits = defineEmits(["click"]);
+const emits = defineEmits(["click",'dblclick']);
 </script>
 
 <style lang="scss" scoped>
