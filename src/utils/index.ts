@@ -71,7 +71,7 @@ const parseMapValuehand = (map: string, modelValue: any) => {
     for (var key in resetMap) {
       let value = resetMap[key]; // bb${a}px
       if (reg_g.test(value)) {
-        let reg_key = /\$\{(.*?)\}/g;  // ${a}
+        let reg_key = /\$\{(.*?)\}/g; // ${a}
         let match = value.match(reg_key)?.[0] ?? ""; // ${a}
         let allStringArr = value.split(match); // ['bb','px']
         let resetKey = match.replace(/[\$|{|}]/g, ""); // a
@@ -119,3 +119,40 @@ export const mergeObjHand = (origin: any, target: any) => {
     origin[key] = target?.[key] ?? origin[key];
   }
 };
+
+// 获取一个组件旋转 rotate 后的样式
+export function getComponentRotatedStyle(style: any) {
+  style = { ...style };
+  if (style.rotate != 0) {
+    const newWidth =
+      style.width * Math.cos(style.rotate) +
+      style.height * Math.sin(style.rotate);
+    const diffX = (style.width - newWidth) / 2; // 旋转后范围变小是正值，变大是负值
+    style.left += diffX;
+    style.right = style.left + newWidth;
+
+    const newHeight =
+      style.height * Math.cos(style.rotate) +
+      style.width * Math.sin(style.rotate);
+    const diffY = (newHeight - style.height) / 2; // 始终是正
+    style.top -= diffY;
+    style.bottom = style.top + newHeight;
+
+    style.width = newWidth;
+    style.height = newHeight;
+  } else {
+    style.bottom = style.top + style.height;
+    style.right = style.left + style.width;
+  }
+
+  return style;
+}
+
+
+export const sleepHand = (time=0)=>{
+  return new Promise((resolve:any)=>{
+    setTimeout(()=>{
+      resolve()
+    },time)
+  })
+}

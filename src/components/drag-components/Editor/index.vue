@@ -3,7 +3,7 @@
     ref="dragRef"
     :class="{ 'drag-editor-wrap': true, disabled: disabled }"
     @click.self.stop="resetAllActiveHand"
-    @mousedown="initKeyEventHand()"
+    @mousedown="initKeyEventHand"
     v-on-click-outside="closeOutSideEditorHand"
     :style="styleCom"
   >
@@ -38,17 +38,28 @@
       ></component>
     </VueDragResizeRotate>
     <subLine ref="subLineRef" />
+    <Area
+      v-show="areaForm.show"
+      :start="areaForm.start"
+      :width="areaForm.width"
+      :height="areaForm.height"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import subLine from "../subline/index.vue";
-import { computed, onMounted, onUnmounted, reactive, ref } from "vue";
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from "vue";
 import { commonAttr, initScaleRatio } from "./layout.ts";
 import { ComponentsInterface, PannelInterface } from "../editor";
 import { getComponent } from "@/components/custom-component/index";
 import { vOnClickOutside } from "@vueuse/components";
-import { getUUID, resetComponentAttrHand } from "@/utils";
+import {
+  getComponentRotatedStyle,
+  getUUID,
+  resetComponentAttrHand,
+  sleepHand,
+} from "@/utils";
 import {
   useActiveElement,
   useMagicKeys,
@@ -57,6 +68,7 @@ import {
 } from "@vueuse/core";
 import { logicAnd } from "@vueuse/math";
 import { useClipboard } from "@vueuse/core";
+import Area from "./Area.vue";
 const props = withDefaults(
   defineProps<{
     pannel: PannelInterface;
@@ -73,6 +85,12 @@ const props = withDefaults(
   }
 );
 let editorIsActive = ref(false);
+let areaForm = reactive({
+  show: false,
+  start: { x: 0, y: 0 },
+  width: 0,
+  height: 0,
+});
 let styleCom = computed(() => {
   return {
     transform: `scale(${initScaleRatio.value})`,
@@ -96,7 +114,7 @@ let dataForm = reactive({
 });
 onMounted(() => {
   // if (!props.disabled) {
-  //   initKeyEventHand();
+    // initKeyEventHand();
   // }
   initCopyEventHand();
 });
@@ -184,18 +202,112 @@ const deleteActiveHand = () => {
   });
   emits("refresh");
 };
-const initKeyEventHand = () => {
+const initKeyEventHand = (e: any) => {
   editorIsActive.value = true;
   window.addEventListener("keydown", setSyncStateHand);
   window.addEventListener("keyup", resetSyncStateHand);
   window.addEventListener("keydown", setControlHand);
   window.addEventListener("keyup", resetControlHand);
+  // 以下为区域选择
+  hideArea();
+  // 获取编辑器的位移信息，每次点击时都需要获取一次。主要是为了方便开发时调试用。
+  const rectInfo = dragRef.value.getBoundingClientRect();
+  let editorX = rectInfo.x;
+  let editorY = rectInfo.y;
+
+  const startX = e.clientX;
+  const startY = e.clientY;
+  areaForm.start.x = startX - editorX;
+  areaForm.start.y = startY - editorY;
+  // 展示选中区域
+  areaForm.show = true;
+
+  const move = (moveEvent: any) => {
+    moveEvent.preventDefault();
+    if (dataForm.draggingId) {
+      hideArea();
+      return;
+    }
+    areaForm.width = Math.abs(moveEvent.clientX - startX);
+    areaForm.height = Math.abs(moveEvent.clientY - startY);
+    if (moveEvent.clientX < startX) {
+      areaForm.start.x = moveEvent.clientX - editorX;
+    }
+
+    if (moveEvent.clientY < startY) {
+      areaForm.start.y = moveEvent.clientY - editorY;
+    }
+  };
+
+  const up = async (e: any) => {
+    document.removeEventListener("mousemove", move);
+    document.removeEventListener("mouseup", up);
+    if (e.clientX == startX && e.clientY == startY) {
+      return;
+    }
+    if (dataForm.draggingId) {
+      hideArea();
+      return;
+    }
+    await sleepHand(10);
+    isHandActive = true;
+    setAreaComponentActive();
+    hideArea();
+    await nextTick()
+    isHandActive = false;
+  };
+  document.addEventListener("mousemove", move);
+  document.addEventListener("mouseup", up);
 };
 const removeEventHand = () => {
   window.removeEventListener("keydown", setSyncStateHand);
   window.removeEventListener("keyup", resetSyncStateHand);
   window.removeEventListener("keydown", setControlHand);
   window.removeEventListener("keyup", resetControlHand);
+};
+
+const hideArea = () => {
+  areaForm.show = false;
+  areaForm.width = 0;
+  areaForm.height = 0;
+};
+let isHandActive = false; // 是否在手动设置选中
+// 选中区域内组件选中
+const setAreaComponentActive = () => {
+  let areaComponent = getSelectArea();
+  areaComponent.forEach((component: any) => {
+    component.preventDeactivation = true;
+    component.active = true;
+  });
+};
+const getSelectArea = () => {
+  let result: any = [];
+  // 区域起点坐标
+  const { x, y } = areaForm.start;
+  // 计算所有的组件数据，判断是否在选中区域内
+  props.pannel.components.forEach((component) => {
+    // if (component.isLock) return;
+
+    let componentAttr = component || {};
+    const { left, top, width, height } = getComponentRotatedStyle({
+      width: componentAttr.w === "auto" ? 0 : parseFloat(componentAttr.w),
+      height: componentAttr.h === "auto" ? 0 : parseFloat(componentAttr.h),
+      rotate: componentAttr.r,
+      top: componentAttr.y,
+      left: componentAttr.x,
+    });
+    if (
+      x <= left &&
+      y <= top &&
+      left + width <= x + areaForm.width &&
+      top + height <= y + areaForm.height
+    ) {
+      result.push(component);
+    }
+  });
+
+  // 返回在选中区域内的所有组件
+  return result;
 };
 const closeOutSideEditorHand = () => {
   removeEventHand();
@@ -229,6 +341,7 @@ const refLineParams = (data: any) => {
   subLineRef.value?.init(data);
 };
 const onActivated = (item: any) => {
+  if (isHandActive) return;
   if (dataForm.controlKey) {
     item.preventDeactivation = true;
   } else {
@@ -244,10 +357,10 @@ const onDeactivated = (item: any) => {
   item.active = false;
   item.preventDeactivation = false;
 };
-const resetAllActiveHand = () => {
+const resetAllActiveHand = (e:any) => {
   if (props.disabled) return;
-  initKeyEventHand();
-  if (dataForm.controlKey && editorIsActive) return;
+  // initKeyEventHand(e);
+  if (dataForm.controlKey && editorIsActive.value) return;
   props.active.forEach((el) => {
     el.active = false;
     el.preventDeactivation = false;
