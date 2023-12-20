@@ -12,6 +12,7 @@
       v-bind="{ ...commonAttr, ...item, self: '', dySelf: '' }"
       :h="item.h == 'auto' ? item.h : parseFloat(item.h) || 0"
       :w="item.w == 'auto' ? item.w : parseFloat(item.w) || 0"
+      :draggable="!item.lock"
       @activated="onActivated(item)"
       @deactivated="onDeactivated(item)"
       @refLineParams="refLineParams"
@@ -276,6 +277,7 @@ let isHandActive = false; // 是否在手动设置选中
 const setAreaComponentActive = () => {
   let areaComponent = getSelectArea();
   areaComponent.forEach((component: any) => {
+    if(component.lock) return
     component.preventDeactivation = true;
     component.active = true;
   });
@@ -357,7 +359,7 @@ const onDeactivated = (item: any) => {
   item.active = false;
   item.preventDeactivation = false;
 };
-const resetAllActiveHand = (e:any) => {
+const resetAllActiveHand = () => {
   if (props.disabled) return;
   // initKeyEventHand(e);
   if (dataForm.controlKey && editorIsActive.value) return;
@@ -384,7 +386,7 @@ const dragging = (id: any, left: any, top: any) => {
   // 仅激活的移动
   if (!dataForm.isAllAsync) {
     props.active?.forEach?.((el) => {
-      if (el.active && el !== id) {
+      if (el.active && el !== id && !el.lock) {
         el.x = (el.x ?? 0) + deltaX;
         el.y = (el.y ?? 0) + deltaY;
       }
@@ -393,7 +395,7 @@ const dragging = (id: any, left: any, top: any) => {
   }
   // 全部移动
   props.pannel.components.forEach((el) => {
-    if (el !== id) {
+    if (el !== id && !el.lock) {
       el.x = (el.x ?? 0) + deltaX;
       el.y = (el.y ?? 0) + deltaY;
     }

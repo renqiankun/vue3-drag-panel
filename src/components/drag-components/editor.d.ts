@@ -27,6 +27,7 @@ export type ComponentsInterface = {
   resizable: boolean;
   lockAspectRatio: boolean;
   group: Array<ComponentsInterface>;
+  lock:boolean; // 锁定不可拖拽
   [key: string]: any;
   //组件独有属性
   self: {
